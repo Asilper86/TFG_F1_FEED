@@ -15,3 +15,7 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+
+Route::get('/test-react', function () {
+    return view('test-react');
+});
