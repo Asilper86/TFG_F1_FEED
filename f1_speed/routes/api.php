@@ -10,7 +10,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('telemetry/lap', [TelemetryController::class, 'store']);
+Route::post('telemetry/lap', [TelemetryController::class, 'store'])->middleware('auth:sanctum');
 Route::get('telemetry/test', function(){
     return Lap::with('telemetryLogs')->latest()->get();
 });

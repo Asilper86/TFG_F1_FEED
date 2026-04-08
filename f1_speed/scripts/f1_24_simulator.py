@@ -5,6 +5,8 @@ import random
 API_URL = "http://localhost:8000/api/telemetry/lap"
 SESSION_ID = 1  # Ajusta esto si tu base de datos tiene otro ID
 
+
+
 def generar_vuelta_sim(lap_num):
     puntos = 100
 
@@ -50,12 +52,19 @@ def generar_vuelta_sim(lap_num):
 def enviar_datos(numero_vueltas=5):
     print(f"\n🏎️  Arrancando simulador F1 24... ¡Simulando {numero_vueltas} vueltas!\n")
     
+
+
     for vuelta in range(1, numero_vueltas + 1):
         datos = generar_vuelta_sim(vuelta)
 
         try:
             print(f"📡 [Vuelta {vuelta}/{numero_vueltas}] Enviando tiempo de {datos['lap_time']}s...")
-            response = requests.post(API_URL, json=datos)
+            
+            cabeceras_vip = {
+                "Authorization": "Bearer 2|JGiAHQz6MVYJszctDArOfqVWvVDPFonBEWAnds18cff4fb43",
+                "Accept": "application/json"
+            }
+            response = requests.post(API_URL, json=datos, headers=cabeceras_vip)
 
             if response.status_code == 201:
                 print("✅ ¡Éxito! Válido en Box.")
@@ -76,4 +85,4 @@ def enviar_datos(numero_vueltas=5):
 
 if __name__ == "__main__":
     # Ajusta aquí cuántas vueltas vuoi simular de golpe (ej: 10)
-    enviar_datos(numero_vueltas=15)
+    enviar_datos(numero_vueltas=7)
