@@ -15,7 +15,7 @@ def generar_vuelta_sim(lap_num):
         "gear": [],
     }
 
-    # Generamos una ligera variación entre vueltas para que la gráfica no sea idéntica
+    # Generamos una ligera variación entre vueltas para que la gráfica no sea 
     variacion_aleatoria = random.randint(-15, 15)
 
     for i in range(puntos):
@@ -76,4 +76,4 @@ def enviar_datos(numero_vueltas=5):
 
 if __name__ == "__main__":
     # Ajusta aquí cuántas vueltas vuoi simular de golpe (ej: 10)
-    enviar_datos(numero_vueltas=5)
+    enviar_datos(numero_vueltas=15)

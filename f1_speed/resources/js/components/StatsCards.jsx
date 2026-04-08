@@ -1,10 +1,11 @@
 import React from 'react';
+import { formatLapTime } from '../Pages/Dashboard';
 
 export default function StatsCards({laps = []}) {
     let mejorVuelta = 'N/A';
     if(laps.length > 0){
         const tiempos = laps.map(v => parseFloat(v.lap_time));
-        mejorVuelta = Math.min(...tiempos).toFixed(3);
+        mejorVuelta = formatLapTime(Math.min(...tiempos));
     }
 
 

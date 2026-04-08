@@ -5,7 +5,15 @@ import Navbar from '../components/NavBar';
 import LapsTable from '../Components/LapsTable';
 import GraficoTelemetria from '../Components/GraficoTelemetria';
 
+export const formatLapTime = (totalSeconds) => {
+    if(!totalSeconds) return '0:00:000';
 
+    const minutos = Math.floor(totalSeconds / 60);
+    const segundos = totalSeconds % 60;
+    const formatoSegundos = segundos < 10 ? `0${segundos.toFixed(3)}` : segundos.toFixed(3);
+
+    return `${minutos}:${formatoSegundos}`;
+}
 
 export default function Dashboard({ laps }) {
     const {auth} = usePage().props;
