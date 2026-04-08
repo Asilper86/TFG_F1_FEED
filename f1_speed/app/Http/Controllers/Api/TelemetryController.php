@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Lap;
 use App\Models\Telemetry_log;
+use App\Models\User;
 use DB;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,15 @@ class TelemetryController extends Controller
      */
     public function index()
     {
-        //
+        $user_id = auth()->id();
+        $laps = Lap::whereHas('session', function($query) use ($user_id){
+            $query->where('user_id', $user_id);
+        })
+        ->with(['session', 'telemetryLogs'])
+        ->latest()
+        ->get();
+
+        return response()->json($laps);
     }
 
     /**
@@ -33,11 +42,11 @@ class TelemetryController extends Controller
     {
         $validated = $request->validate([
             'session_id' => 'required',
-            'lap_time' => 'required, numeric',
-            'sector_1' => 'nullable, numeric',
-            'sector_2' => 'nullable, numeric',
-            'sector_3' => 'nullable, numeric',
-            'telemetry' => 'required, array'
+            'lap_time' => 'required|numeric',
+            'sector_1' => 'nullable|numeric',
+            'sector_2' => 'nullable|numeric',
+            'sector_3' => 'nullable|numeric',
+            'telemetry' => 'required|array'
         ]);
 
         return DB::transaction(function () use ($validated) {

@@ -4,7 +4,7 @@ import random
 import json
 
 API_URL = "http://localhost:8000/api/telemetry/lap"
-SESSION_ID = 1
+SESSION_ID = 2
 
 
 def generar_vuelta_sim():
