@@ -69,8 +69,13 @@ class DashboardController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        //
+    
+    public function destroy(Lap $lap){
+        if($lap->session->user_id !== auth()->id()){
+            abort(403, 'Acceso Denegado: No tienes permisos para esa acción.');
+        };
+
+        $lap->delete();
+        return redirect()->back();
     }
 }

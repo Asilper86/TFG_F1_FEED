@@ -20,6 +20,7 @@ Route::middleware([
     })->name('dashboard'); */
 
     Route::get('dashboard-f1', [DashboardController::class, 'index'])->name('dashboard');
+    Route::delete('telemetry/lap/{lap}', [DashboardController::class, 'destroy'])->name('lap.destroy');
 });
 
 
