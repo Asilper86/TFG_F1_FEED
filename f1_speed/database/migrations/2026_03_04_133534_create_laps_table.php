@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('laps', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('session_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('session_id')->constrained('racing_sessions')->cascadeOnDelete();
             $table->decimal('lap_time', 8,3);
             $table->integer('lap_number');
             $table->decimal('sector_1', 6,3);

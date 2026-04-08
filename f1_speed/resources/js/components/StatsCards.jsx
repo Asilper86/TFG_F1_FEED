@@ -1,10 +1,23 @@
 import React from 'react';
 
-export default function StatsCards() {
+export default function StatsCards({laps = []}) {
+    let mejorVuelta = 'N/A';
+    if(laps.length > 0){
+        const tiempos = laps.map(v => parseFloat(v.lap_time));
+        mejorVuelta = Math.min(...tiempos).toFixed(3);
+    }
+
+
+    let mejorVelocidad = "0";
+    if(laps.length > 0 && laps[0].telemetry_logs[0] && laps[0].telemetry_logs[0]){
+        const velocidadesObj = laps[0].telemetry_logs[0].telemetry_json.speed;
+        mejorVelocidad = Math.max(...velocidadesObj);
+    }
+
     const stats = [
-        { label: 'MEJOR VUELTA', value: '1:14.450', color: 'border-purple-500' },
-        { label: 'VELOCIDAD PUNTA', value: '324 KM/H', color: 'border-red-600' },
-        { label: 'VUELTAS TOTALES', value: '24', color: 'border-green-500' },
+        { label: 'MEJOR VUELTA', value: mejorVuelta, color: 'border-purple-500' },
+        { label: 'VELOCIDAD PUNTA', value: `${mejorVelocidad} KM/H`, color: 'border-red-600' },
+        { label: 'VUELTAS TOTALES', value: laps.length, color: 'border-green-500' },
     ];
 
     return (
