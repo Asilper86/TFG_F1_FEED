@@ -1,17 +1,20 @@
 import './bootstrap';
-import React from 'react';
+import '../css/app.css';
+
 import { createRoot } from 'react-dom/client';
+import { createInertiaApp } from '@inertiajs/react';
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
-const container = document.getElementById('react-app');
+const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
-if (container) {
-    const root = createRoot(container);
-    root.render(
-        <React.StrictMode>
-            <div style={{ padding: '20px', backgroundColor: '#e2e8f0', borderRadius: '8px' }}>
-                <h1 style={{ color: '#1e40af' }}>🏎️ ¡React y Laravel Conectados!</h1>
-                <p>La telemetría de F1 está lista para despegar.</p>
-            </div>
-        </React.StrictMode>
-    );
-}
+createInertiaApp({
+    title: (title) => `${title} - ${appName}`,
+    resolve: (name) => resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx')),
+    setup({ el, App, props }) {
+        const root = createRoot(el);
+        root.render(<App {...props} />);
+    },
+    progress: {
+        color: '#4B5563',
+    },
+});
