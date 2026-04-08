@@ -2,8 +2,6 @@ import React from 'react';
 import { Link, router } from '@inertiajs/react'; 
 
 export default function Navbar({ user }) {
-
-
     const handleLogout = () => {
         router.post('/logout', {}, {
             onFinish: () => {
@@ -13,21 +11,20 @@ export default function Navbar({ user }) {
     }
     
     return (
-        <nav className="bg-[#0f0f0f] border-b border-white/5 px-6 py-4 mb-8">
+        <nav className="bg-[#1B1D21] border-b border-[#2d3136] px-6 py-4">
             <div className="max-w-7xl mx-auto flex justify-between items-center">
-                <Link href="/" className="text-xl font-black italic tracking-tighter uppercase">
-                    F1<span className="text-red-600">SPEED</span>
+                <Link href="/" className="text-xl font-bold tracking-wide uppercase flex items-center gap-2 text-white">
+                    <span className="text-[#E10600]">/</span> F1 SPEED
                 </Link>
 
                 <div className="flex items-center space-x-6">
                     <div className="text-right hidden sm:block">
-                        <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold leading-none">Piloto Activo</p>
-                        <p className="text-sm font-bold italic text-white uppercase">{user?.name || 'Invitado'}</p>
+                        <p className="text-[10px] uppercase tracking-widest text-[#E10600] font-bold leading-none mb-1">Piloto Activo</p>
+                        <p className="text-sm font-bold uppercase tracking-wide text-white">{user?.name || 'Invitado'}</p>
                     </div>
 
-                    {}
-                    <button onClick={handleLogout} className="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-lg border border-red-600/20 transition-all duration-300">
-                        Cerrar Box
+                    <button onClick={handleLogout} className="bg-[#23262A] hover:bg-[#2A2E33] text-gray-300 hover:text-white text-[11px] font-bold uppercase tracking-widest px-4 py-2.5 rounded border border-[#2d3136] transition-all">
+                        CERRAR BOX
                     </button>
                 </div>
             </div>
