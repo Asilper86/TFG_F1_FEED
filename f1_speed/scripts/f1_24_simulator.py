@@ -4,7 +4,7 @@ import random
 import json
 
 API_URL = "http://localhost:8000/api/telemetry/lap"
-SESSION_ID = 2
+SESSION_ID = 1
 
 
 def generar_vuelta_sim():
@@ -38,6 +38,7 @@ def generar_vuelta_sim():
     return {
         "session_id": SESSION_ID,
         "lap_time": round(random.uniform(80.0, 95.0), 3),
+        "lap_number": 1,
         "sector_1": 28.5,
         "sector_2": 32.1,
         "sector_3": 25.4,

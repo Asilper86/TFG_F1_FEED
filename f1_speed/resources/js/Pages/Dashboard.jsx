@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import StatsCards from '../Components/StatsCards';
 import Navbar from '../components/NavBar';
 import LapsTable from '../Components/LapsTable';
 import GraficoTelemetria from '../Components/GraficoTelemetria';
+
 
 
 export default function Dashboard({ laps }) {
@@ -13,7 +14,9 @@ export default function Dashboard({ laps }) {
     
 
     const [selectedLap, setSelectedLap] = React.useState(safeLaps[0] || null);
-
+    React.useEffect(() => {
+        setSelectedLap(laps[0] || null)
+    }, [laps]);
 
     const telemetryData = selectedLap?.telemetry_logs?.[0]?.telemetry_json;
     const chartData = telemetryData?.speed?.map((s, index) => ({

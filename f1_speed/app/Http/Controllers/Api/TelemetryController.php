@@ -46,13 +46,15 @@ class TelemetryController extends Controller
             'sector_1' => 'nullable|numeric',
             'sector_2' => 'nullable|numeric',
             'sector_3' => 'nullable|numeric',
-            'telemetry' => 'required|array'
+            'telemetry' => 'required|array',
+            'lap_number' => 'required|numeric'
         ]);
 
         return DB::transaction(function () use ($validated) {
             $lap = Lap::create([
                 'session_id' => $validated['session_id'],
                 'lap_time'   => $validated['lap_time'],
+                'lap_number' => $validated['lap_number'],
                 'sector_1'   => $validated['sector_1'] ?? 0,
                 'sector_2'   => $validated['sector_2'] ?? 0,
                 'sector_3'   => $validated['sector_3'] ?? 0,

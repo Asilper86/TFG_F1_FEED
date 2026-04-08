@@ -9,10 +9,10 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Lap extends Model
 {
-    protected $fillable = ['session_id', 'lap_time', 'sector_1', 'sector_2', 'sector_3'];
+    protected $fillable = ['session_id','lap_number', 'lap_time', 'sector_1', 'sector_2', 'sector_3'];
 
     public function session():BelongsTo{
-        return $this->belongsTo(Racing_session::class, 'racing_sessions_id');
+        return $this->belongsTo(Racing_session::class, 'session_id');
     }
 
     public function comments(): MorphMany
