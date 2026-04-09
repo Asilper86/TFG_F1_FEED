@@ -83,25 +83,6 @@ export default function Dashboard({ laps }) {
                             )}
                         </h1>
                     </div>
-
-                    {safeLaps.length > 0 && (
-                        <div className="min-w-[200px] mt-4 md:mt-0">
-                            <select
-                                className="w-full appearance-none bg-[#23262A] text-white font-mono text-sm p-3 px-4 rounded-lg border border-[#2d3136] outline-none cursor-pointer focus:border-[#E10600]"
-                                value={selectedLap?.id || ''}
-                                onChange={(e) => {
-                                    const found = safeLaps.find(l => l.id == e.target.value);
-                                    if (found) setSelectedLap(found);
-                                }}
-                            >
-                                {safeLaps.map(lap => (
-                                    <option key={lap.id} value={lap.id} className="bg-[#1B1D21]">
-                                        LAP {lap.lap_number} -- {formatLapTime(lap.lap_time)}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
