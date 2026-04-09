@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lap;
+use App\Models\Racing_session;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,16 +14,21 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        $activeSession = Racing_session::where('user_id', auth()->id())
+            ->where('is_active', true)
+            ->first();
+
         $laps = Lap::whereHas('session', function($query){
             $query->where('user_id', auth()->id());
         })
         ->with('telemetryLogs')
         ->latest()
-        ->take(10)
+        ->take(15)
         ->get();
 
         return Inertia::render('Dashboard', [
-            'laps' => $laps
+            'laps' => $laps,
+            'activeSession' => $activeSession
         ]);
     }
 

@@ -13,9 +13,18 @@ export default function Navbar({ user }) {
     return (
         <nav className="bg-[#1B1D21] border-b border-[#2d3136] px-6 py-4">
             <div className="max-w-7xl mx-auto flex justify-between items-center">
-                <Link href="/" className="text-xl font-bold tracking-wide uppercase flex items-center gap-2 text-white">
-                    <span className="text-[#E10600]">/</span> F1 SPEED
-                </Link>
+                <div className="flex items-center gap-8">
+                    <Link href="/dashboard-f1" className="text-xl font-bold tracking-wide uppercase flex items-center gap-2 text-white">
+                        <span className="text-[#E10600]">/</span> F1 SPEED
+                    </Link>
+                    
+                    <Link href="/dashboard-f1" className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-[#E10600] transition-colors">
+                        Dashboard
+                    </Link>
+                    <Link href="/session/setup" className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">
+                        Setup de Sesión
+                    </Link>
+                </div>
 
                 <div className="flex items-center space-x-6">
                     <div className="text-right hidden sm:block">

@@ -15,12 +15,14 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    /* Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard'); */
+    
 
     Route::get('dashboard-f1', [DashboardController::class, 'index'])->name('dashboard');
     Route::delete('telemetry/lap/{lap}', [DashboardController::class, 'destroy'])->name('lap.destroy');
+    
+    
+    Route::get('session/setup', [\App\Http\Controllers\RacingSessionController::class, 'create'])->name('session.setup');
+    Route::post('session/setup', [\App\Http\Controllers\RacingSessionController::class, 'store'])->name('session.store');
 });
 
 

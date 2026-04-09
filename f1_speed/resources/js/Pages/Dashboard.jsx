@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, usePage, router } from '@inertiajs/react';
+import { Head, usePage, router, Link } from '@inertiajs/react';
 import StatsCards from '../Components/StatsCards';
 import Navbar from '../components/NavBar';
 import LapsTable from '../Components/LapsTable';
@@ -13,7 +13,11 @@ export const formatLapTime = (totalSeconds) => {
     return `${minutos}:${formatoSegundos}`;
 };
 
-export default function Dashboard({ laps }) {
+
+
+
+
+export default function Dashboard({ laps, activeSession }) {
     const { auth } = usePage().props;
     const safeLaps = laps || [];
     const [encendido, setEncendido] = useState(false);
@@ -69,7 +73,7 @@ export default function Dashboard({ laps }) {
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-4 border-b border-[#2d3136]">
-                    <div>
+                    <div className="flex items-center gap-6">
                         <h1 className="text-[22px] font-bold tracking-wide text-white uppercase flex items-center gap-3">
                             <span className="text-[#E10600] text-3xl font-black">/</span> Analisis de Sesiones
                             {encendido ? (
@@ -82,7 +86,25 @@ export default function Dashboard({ laps }) {
                                 </span>
                             )}
                         </h1>
+
+                        {activeSession && (
+                            <div className="hidden lg:flex items-center gap-4 bg-[#23262A] px-4 py-2 rounded-lg border border-[#2d3136]">
+                                <div className="text-left">
+                                    <p className="text-[8px] uppercase tracking-[0.2em] text-gray-500 font-bold mb-0.5">Active Setup</p>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-white">
+                                        {activeSession.track_id} | {activeSession.car_id} | {activeSession.weather}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
                     </div>
+
+                    <Link 
+                        href="/session/setup"
+                        className="mt-4 md:mt-0 bg-[#E10600] hover:bg-[#ff0700] text-white text-[10px] font-black uppercase tracking-widest px-6 py-3 rounded italic transition-all active:scale-95"
+                    >
+                        + Configurar Sesión
+                    </Link>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

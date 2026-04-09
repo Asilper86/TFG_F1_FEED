@@ -12,14 +12,28 @@ export default function StatsCards({ laps = [] }) {
         mejorVelocidad = Math.max(...laps[0].telemetry_logs[0].telemetry_json.speed);
     }
 
+    let tiempoIdeal = '--:--.---';
+
+    if(laps.length > 0){
+        const minS1 = Math.min(...laps.map(v => parseFloat(v.sector_1)).filter(s=>s>0));
+        const minS2 = Math.min(...laps.map(v => parseFloat(v.sector_2)).filter(s=>s>0));
+        const minS3 = Math.min(...laps.map(v => parseFloat(v.sector_3)).filter(s=>s>0));
+
+        const suma = minS1 + minS2 + minS3;
+        if(suma > 0 && isFinite(suma)){
+            tiempoIdeal = formatLapTime(suma)
+        }
+    }
+
     const stats = [
-        { label: 'BEST LAP', value: mejorVuelta },
+        { label: 'MEJOR LAP', value: mejorVuelta },
+        { label: 'VUELTA IDEAL', value: tiempoIdeal, color: 'text-[#c026d3]' },
         { label: 'TOP SPEED (KM/H)', value: mejorVelocidad },
         { label: 'TOTAL LAPS', value: laps.length },
     ];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
             {stats.map((stat, i) => (
                 <div key={i} className="bg-[#23262A] p-6 rounded-lg flex flex-col justify-center border border-[#2d3136]">
                     <span className="text-3xl font-bold text-white mb-2">{stat.value}</span>
