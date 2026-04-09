@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, usePage, router } from '@inertiajs/react';
 import StatsCards from '../Components/StatsCards';
 import Navbar from '../components/NavBar';
 import LapsTable from '../Components/LapsTable';
@@ -16,13 +16,30 @@ export const formatLapTime = (totalSeconds) => {
 export default function Dashboard({ laps }) {
     const { auth } = usePage().props;
     const safeLaps = laps || [];
-
+    const [encendido, setEncendido] = useState(false);
     const [selectedLap, setSelectedLap] = React.useState(safeLaps[0] || null);
     const [visibleMetrics, setVisibleMetrics] = useState({
         speed: true,
         throttle: false,
         brake: false,
     })
+
+
+    React.useEffect(() => {
+        const radar = setInterval(() => {
+            setEncendido(true)
+            router.reload({
+                only: ['laps'],
+                preserveScroll: true,
+                preserveState: true,
+                onFinish: () => setTimeout(() => setEncendido(false), 800)
+            });
+        }, 10000);
+
+        return () => clearInterval(radar);
+
+    }, []);
+
     React.useEffect(() => {
         if (!selectedLap && safeLaps.length > 0) {
             setSelectedLap(safeLaps[0]);
@@ -53,6 +70,15 @@ export default function Dashboard({ laps }) {
                     <div>
                         <h1 className="text-[22px] font-bold tracking-wide text-white uppercase flex items-center gap-3">
                             <span className="text-[#E10600] text-3xl font-black">/</span> Analisis de Sesiones
+                            {encendido ? (
+                                <span className="text-[9px] uppercase tracking-widest text-[#10b981] ml-4 flex items-center gap-1.5 font-mono">
+                                    <span className="w-1.5 h-1.5 bg-[#10b981] rounded-full animate-ping"></span> SYNCING_
+                                </span>
+                            ) : (
+                                <span className="text-[9px] uppercase tracking-widest text-gray-600 ml-4 flex items-center gap-1.5 font-mono">
+                                    <span className="w-1.5 h-1.5 bg-gray-600 rounded-full"></span> LIVE_MONITOR
+                                </span>
+                            )}
                         </h1>
                     </div>
 

@@ -50,7 +50,7 @@ def generar_vuelta_sim(lap_num):
 
 
 def enviar_datos(numero_vueltas=5):
-    print(f"\n🏎️  Arrancando simulador F1 24... ¡Simulando {numero_vueltas} vueltas!\n")
+    print(f"\n[INFO] Arrancando simulador F1 24... Simulanndo {numero_vueltas} vueltas!\n")
     
 
 
@@ -58,7 +58,7 @@ def enviar_datos(numero_vueltas=5):
         datos = generar_vuelta_sim(vuelta)
 
         try:
-            print(f"📡 [Vuelta {vuelta}/{numero_vueltas}] Enviando tiempo de {datos['lap_time']}s...")
+            print(f"[RED] [Vuelta {vuelta}/{numero_vueltas}] Enviando tiempo de {datos['lap_time']}s...")
             
             cabeceras_vip = {
                 "Authorization": "Bearer 2|JGiAHQz6MVYJszctDArOfqVWvVDPFonBEWAnds18cff4fb43",
@@ -67,20 +67,20 @@ def enviar_datos(numero_vueltas=5):
             response = requests.post(API_URL, json=datos, headers=cabeceras_vip)
 
             if response.status_code == 201:
-                print("✅ ¡Éxito! Válido en Box.")
+                print("[OK] Exito! Valido en Box.")
             else:
-                print(f"❌ Error {response.status_code}: {response.text}")
+                print(f"[ERROR] Error {response.status_code}: {response.text}")
 
         except requests.exceptions.ConnectionError:
-            print("🚫 Error: No se pudo conectar con Laravel. ¿Está 'php artisan serve' activo?")
+            print("[FATAL] Error: No se pudo conectar con Laravel. Esta 'php artisan serve' activo?")
             break
 
         # Simulamos que tarda 3 segundos en dar cada vuelta para que veas el Dashboard cambiar en vivo 
         if vuelta < numero_vueltas:
-            print("⏳ Acelerando en pista...\n")
+            print("[WAIT] Acelerando en pista...\n")
             time.sleep(3) 
 
-    print("\n🏁 Sesión finalizada. Coches a Box.")
+    print("\n[FIN] Sesion finalizada. Coches a Box.")
 
 
 if __name__ == "__main__":
