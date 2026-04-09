@@ -11,6 +11,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('telemetry/lap', [TelemetryController::class, 'store'])->middleware('auth:sanctum');
+Route::get('active-session', [TelemetryController::class, 'activeSession'])->middleware('auth:sanctum');
 Route::get('telemetry/test', function(){
     return Lap::with('telemetryLogs')->latest()->get();
 });

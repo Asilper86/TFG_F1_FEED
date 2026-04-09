@@ -28,7 +28,7 @@ export default function StatsCards({ laps = [] }) {
     const stats = [
         { label: 'MEJOR VUELTA', value: mejorVuelta },
         { label: 'VUELTA IDEAL', value: tiempoIdeal, color: 'text-[#c026d3]' },
-        { label: 'VELOCIDAD PUNTA (KM/H)', value: mejorVelocidad },
+        { label: 'VELOCIDAD PUNTA (KM/H)', value: mejorVelocidad }, 
         { label: 'TOTAL VUELTAS', value: laps.length },
     ];
 

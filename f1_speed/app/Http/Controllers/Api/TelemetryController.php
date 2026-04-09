@@ -36,6 +36,20 @@ class TelemetryController extends Controller
     }
 
     /**
+     * Devuelve la sesión activa para el script de telemetría.
+     */
+    public function activeSession()
+    {
+        $session = Racing_session::where('is_active', true)->latest()->first();
+
+        if (!$session) {
+            return response()->json(['error' => 'No hay sesión activa'], 404);
+        }
+
+        return response()->json($session);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
