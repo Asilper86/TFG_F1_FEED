@@ -49,7 +49,19 @@ export default function GraficoTelemetria({ data, visibleMetrics = { speed: true
                     {visibleMetrics.gear && (
                         <Line yAxisId="gear" type="stepAfter" name="GEAR" dataKey="gear" stroke="#eab308" dot={false} strokeWidth={2} />
                     )}
+                    <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="speedGhost"
+                        stroke="#3FA9F5"
+                        strokeWidth={2}
+                        strokeOpacity={0.2}
+                        strokeDasharray="5 5"
+                        dot={false}
+                        name="BEST REFERENCE"
+                    />
                 </LineChart>
+
             </ResponsiveContainer>
         </div>
     );

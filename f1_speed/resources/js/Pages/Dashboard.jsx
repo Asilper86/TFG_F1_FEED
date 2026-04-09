@@ -52,9 +52,16 @@ export default function Dashboard({ laps, activeSession }) {
     }, [laps]);
 
     const telemetryData = selectedLap?.telemetry_logs?.[0]?.telemetry_json;
+
+    const mejorVuelta = safeLaps.length > 0 ? [...safeLaps].sort((a, b) => a.lap_time - b.lap_time)[0] 
+    : null;
+
+    const vueltaFantasma = mejorVuelta?.telemetry_logs?.[0]?.telemetry_json;
+
     const chartData = telemetryData?.speed?.map((s, index) => ({
         point: index,
         speed: s,
+        speedGhost: vueltaFantasma?.speed?.[index],
         throttle: telemetryData.throttle[index],
         brake: telemetryData.brake[index],
         gear: telemetryData.gear[index]
