@@ -8,8 +8,8 @@ export default function StatsCards({ laps = [] }) {
     }
 
     let mejorVelocidad = "0";
-    if(laps.length > 0 && laps[0].telemetryLogs?.[0]){
-        mejorVelocidad = Math.max(...laps[0].telemetryLogs[0].telemetry_json.speed);
+    if(laps.length > 0 && laps[0].telemetry_logs?.[0]){
+        mejorVelocidad = Math.max(...laps[0].telemetry_logs[0].telemetry_json.speed);
     }
 
     const stats = [
