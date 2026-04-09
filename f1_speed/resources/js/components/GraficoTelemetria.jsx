@@ -1,7 +1,7 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
-export default function GraficoTelemetria({ data, visibleMetrics = { speed: true, throttle: true, brake: true } }) {
+export default function GraficoTelemetria({ data, visibleMetrics = { speed: true, throttle: true, brake: true, gear: true } }) {
     if (!data || data.length === 0) {
         return (
             <div className="w-full h-[375px] flex items-center justify-center bg-[#23262A] rounded-lg border border-[#2d3136]">
@@ -34,7 +34,7 @@ export default function GraficoTelemetria({ data, visibleMetrics = { speed: true
                     <XAxis dataKey="point" stroke="#555" tick={false} axisLine={{ stroke: '#333' }} />
                     <YAxis yAxisId="left" stroke="#888" tick={{ fill: '#888', fontSize: 11 }} axisLine={false} tickLine={false} />
                     <YAxis yAxisId="right" orientation="right" stroke="#888" domain={[0, 100]} tick={{ fill: '#888', fontSize: 11 }} axisLine={false} tickLine={false} />
-
+                    <YAxis yAxisId="gear" orientation='right' domain={[0, 10]} hide={true} />
                     <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#444', strokeWidth: 1 }} />
                     <Legend wrapperStyle={{ paddingTop: '15px' }} iconType="circle" iconSize={6} />
                     {visibleMetrics.speed && (
@@ -45,6 +45,9 @@ export default function GraficoTelemetria({ data, visibleMetrics = { speed: true
                     )}
                     {visibleMetrics.brake && (
                         <Line yAxisId="right" type="monotone" name="BRAKE" dataKey="brake" stroke="#E10600" dot={false} strokeWidth={2} />
+                    )}
+                    {visibleMetrics.gear && (
+                        <Line yAxisId="gear" type="stepAfter" name="GEAR" dataKey="gear" stroke="#eab308" dot={false} strokeWidth={2} />
                     )}
                 </LineChart>
             </ResponsiveContainer>

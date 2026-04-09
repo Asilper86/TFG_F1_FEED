@@ -22,6 +22,7 @@ export default function Dashboard({ laps }) {
         speed: true,
         throttle: false,
         brake: false,
+        gear: false,
     })
 
 
@@ -51,7 +52,8 @@ export default function Dashboard({ laps }) {
         point: index,
         speed: s,
         throttle: telemetryData.throttle[index],
-        brake: telemetryData.brake[index]
+        brake: telemetryData.brake[index],
+        gear: telemetryData.gear[index]
     })) || [];
 
     const cambiarMetricas = (metrica) => {
@@ -133,6 +135,12 @@ export default function Dashboard({ laps }) {
                                     className={`px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.brake ? 'bg-[#E10600]/20 text-[#E10600] border border-[#E10600]/50' : 'bg-[#1B1D21] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
                                 >
                                     BRAKE
+                                </button>
+                                <button
+                                    onClick={() => cambiarMetricas('gear')}
+                                    className={`px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.gear ? 'bg-[#eab308]/20 text-[#eab308] border border-[#eab308]/50' : 'bg-[#1B1D21] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
+                                >
+                                    GEAR
                                 </button>
                             </div>
                         </div>
