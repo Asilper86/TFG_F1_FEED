@@ -1,5 +1,5 @@
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { LineChart, ReferenceLine, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 export default function GraficoTelemetria({ data, visibleMetrics = { speed: true, throttle: true, brake: true, gear: true } }) {
     if (!data || data.length === 0) {
@@ -31,7 +31,17 @@ export default function GraficoTelemetria({ data, visibleMetrics = { speed: true
             <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#2d3136" vertical={false} />
-                    <XAxis dataKey="point" stroke="#555" tick={false} axisLine={{ stroke: '#333' }} />
+                    <XAxis
+                        type="number"
+                        domain={['dataMin', 'dataMax']}
+                        dataKey="distance"
+                        stroke="#555"
+                        tickFormatter={(value) => `${Math.round(value)}m`}
+                        minTickGap={50}
+                        tick={{ fontSize: 10 }}
+                        axisLine={{ stroke: '#333' }}
+                    />
+
                     <YAxis yAxisId="left" stroke="#888" tick={{ fill: '#888', fontSize: 11 }} axisLine={false} tickLine={false} />
                     <YAxis yAxisId="right" orientation="right" stroke="#888" domain={[0, 100]} tick={{ fill: '#888', fontSize: 11 }} axisLine={false} tickLine={false} />
                     <YAxis yAxisId="gear" orientation='right' domain={[0, 10]} hide={true} />
@@ -48,6 +58,13 @@ export default function GraficoTelemetria({ data, visibleMetrics = { speed: true
                     )}
                     {visibleMetrics.gear && (
                         <Line yAxisId="gear" type="stepAfter" name="GEAR" dataKey="gear" stroke="#eab308" dot={false} strokeWidth={2} />
+                    )}
+
+                    {data[0]?.s1_dist && (
+                        <ReferenceLine x={data[0].s1_dist} stroke="#c026d3" label={{ value: 'S1', fill: '#c026d3', fontSize: 10 }} strokeDasharray="3 3" />
+                    )}
+                    {data[0]?.s2_dist && (
+                        <ReferenceLine x={data[0].s2_dist} stroke="#c026d3" label={{ value: 'S2', fill: '#c026d3', fontSize: 10 }} strokeDasharray="3 3" />
                     )}
                     <Line
                         yAxisId="left"

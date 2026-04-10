@@ -60,12 +60,13 @@ export default function Dashboard({ laps, activeSession }) {
 
     const chartData = telemetryData?.speed?.map((s, index) => ({
         point: index,
+        distance: telemetryData.distance?.[index] || index,
         speed: s,
         speedGhost: vueltaFantasma?.speed?.[index],
         throttle: telemetryData.throttle[index],
         brake: telemetryData.brake[index],
         gear: telemetryData.gear[index]
-    })) || [];
+    })).filter(d => d.distance >= 0) || [];
 
     const cambiarMetricas = (metrica) => {
         setVisibleMetrics(prev => ({ ...prev, [metrica]: !prev[metrica] }));

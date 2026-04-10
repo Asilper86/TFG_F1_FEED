@@ -3,21 +3,20 @@ import struct
 import requests
 import time
 
-# --- CONFIGURACIÓN ---
+
 IP_LARAVEL = "192.168.0.27"
 API_BASE_URL = f"http://{IP_LARAVEL}:8000/api"
-UDP_IP = "0.0.0.0" # Escucha en todas las interfaces del PC actual
+UDP_IP = "0.0.0.0" 
 UDP_PORT = 20777
 
-# Headers para la API de Laravel
 HEADERS = {
     "Authorization": "Bearer 2|JGiAHQz6MVYJszctDArOfqVWvVDPFonBEWAnds18cff4fb43",
     "Accept": "application/json",
     "Content-Type": "application/json"
 }
 
-# --- ESTRUCTURAS DE PAQUETES (F1 24) ---
-HEADER_FORMAT = "<HBBBBBQfIIBB" # 29 bytes exactos
+
+HEADER_FORMAT = "<HBBBBBQfIIBB"
 HEADER_SIZE = 29
 
 def get_active_session_id():
@@ -49,48 +48,71 @@ def run_bridge():
     current_lap_num = -1
     packet_count = 0
     
-    # Almacenamiento temporal
-    telemetria_acumulada = {"speed": [], "throttle": [], "brake": [], "gear": []}
+    
+    
+    telemetria_acumulada = {"speed": [], "throttle": [], "brake": [], "gear": [], "distance": []}
     last_record_time = 0
 
     try:
+        lap_dist = 0
+        s1_dist = 0
+        s2_dist = 0
+        s1_done = False
+        s2_done = False
+        final_s1_time = 0
+        final_s2_time = 0
         while True:
             data, addr = sock.recvfrom(2048)
             packet_count += 1
             
-            # Debug: Monitor de actividad cada 200 paquetes
+            
             if packet_count % 200 == 0:
                 print(f"[LIVE] Recibiendo datos... (Pqts: {packet_count})", end="\r")
 
             header = struct.unpack(HEADER_FORMAT, data[:HEADER_SIZE])
             packet_id = header[5]
-            player_idx = header[10] # Índice del jugador principal
+            player_idx = header[10] 
 
             if player_idx == 255: continue
 
-            # 1. Packet Lap Data (ID 2)
             if packet_id == 2:
+
                 offset = HEADER_SIZE + (player_idx * 113)
-                # Unpack: lastLapMS(I), curLapMS(I), s1MS(H), s1Min(B), s2MS(H), s2Min(B)
-                # Nota: El formato exacto de sectores en F1 24 es un poco más complejo, 
-                # simplificamos para obtener el número de vuelta y el tiempo total.
-                lap_num = struct.unpack_from("<B", data, offset + 33)[0] # m_currentLapNum está en byte 33
+                s1_ms = struct.unpack_from("<H", data, offset + 8)[0]
+                s1_min = struct.unpack_from("<B", data, offset + 10)[0]
+                s2_ms = struct.unpack_from("<H", data, offset + 11)[0]
+                s2_min = struct.unpack_from("<B", data, offset + 13)[0]
+                lap_num = struct.unpack_from("<B", data, offset + 33)[0]
+                lap_dist = struct.unpack_from("<f", data, offset + 18)[0]
+
+                if s1_ms > 0 and not s1_done: 
+                    s1_dist = lap_dist
+                    s1_done = True
+                    final_s1_time = (s1_min * 60) + (s1_ms / 1000.0)
+                    print(f"[SECTOR] S1: {final_s1_time:.3f}s en el metro {s1_dist:.1f}m")
+                if s2_ms > 0 and not s2_done:
+                    s2_dist = lap_dist
+                    s2_done = True
+                    final_s2_time = (s2_min * 60) + (s2_ms / 1000.0)
+                    print(f"[SECTOR] S2: {final_s2_time:.3f}s en el metro {s2_dist:.1f}m")
+
+                offset = HEADER_SIZE + (player_idx * 113)
+                lap_num = struct.unpack_from("<B", data, offset + 33)[0] 
+                lap_dist = struct.unpack_from("<f", data, offset + 20)[0]
                 
                 if current_lap_num == -1:
                     current_lap_num = lap_num
                     print(f"\n[START] ¡Pista detectada! Empezando Vuelta {current_lap_num}")
 
-                # Detectamos cruce de meta
+                
                 if lap_num > current_lap_num and current_lap_num > 0:
-                    # Extraer tiempos finales de la vuelta anterior
-                    # F1 24: m_lastLapTimeInMS (0), m_sector1TimeInMS (8), m_sector1TimeMinutes (10), m_sector2TimeInMS (11), m_sector2TimeMinutes (13)
                     last_lap_ms = struct.unpack_from("<I", data, offset)[0]
                     s1_ms = struct.unpack_from("<H", data, offset + 8)[0]
                     s1_min = struct.unpack_from("<B", data, offset + 10)[0]
                     s2_ms = struct.unpack_from("<H", data, offset + 11)[0]
                     s2_min = struct.unpack_from("<B", data, offset + 13)[0]
 
-                    # Conversión a segundos totales
+                    
                     s1_total = (s1_min * 60) + (s1_ms / 1000.0)
                     s2_total = (s2_min * 60) + (s2_ms / 1000.0)
                     lap_total = last_lap_ms / 1000.0
@@ -102,10 +124,12 @@ def run_bridge():
                         "session_id": session_id,
                         "lap_number": current_lap_num,
                         "lap_time": lap_total,
-                        "sector_1": s1_total,
-                        "sector_2": s2_total,
-                        "sector_3": s3_total,
-                        "telemetry": telemetria_acumulada
+                        "sector_1": final_s1_time,
+                        "sector_2": final_s2_time,
+                        "sector_3": lap_total - final_s1_time - final_s2_time,
+                        "telemetry": telemetria_acumulada,
+                        "s1_dist": s1_dist,
+                        "s2_dist": s2_dist
                     }
                     
                     try:
@@ -117,22 +141,29 @@ def run_bridge():
                     except Exception as e:
                         print(f"[ERR] No se pudo enviar a la web: {e}")
 
-                    # Reset
+                    # === ZONA DE RESET (Limpieza para la siguiente vuelta) ===
+                    print(f"[RESET] Preparando sensores para Vuelta {lap_num}...")
                     current_lap_num = lap_num
-                    telemetria_acumulada = {"speed": [], "throttle": [], "brake": [], "gear": []}
+                    telemetria_acumulada = {"speed": [], "throttle": [], "brake": [], "gear": [], "distance": []}
+                    s1_done = False 
+                    s2_done = False
+                    final_s1_time = 0
+                    final_s2_time = 0
+                    s1_dist = 0
+                    s2_dist = 0
 
-            # 2. Packet Telemetría (ID 6)
+          
             elif packet_id == 6:
                 offset = HEADER_SIZE + (player_idx * 60)
-                # m_speed(H), m_throttle(f), m_steer(f), m_brake(f), m_clutch(B), m_gear(b)
                 tel = struct.unpack_from("<HfffBb", data, offset)
                 
                 now = time.time()
-                if now - last_record_time > 0.1: # 10 muestras por segundo (suficiente para análisis)
+                if now - last_record_time > 0.1: 
                     telemetria_acumulada["speed"].append(int(tel[0]))
                     telemetria_acumulada["throttle"].append(int(tel[1] * 100))
                     telemetria_acumulada["brake"].append(int(tel[3] * 100))
                     telemetria_acumulada["gear"].append(int(tel[5]))
+                    telemetria_acumulada["distance"].append(float(lap_dist))
                     last_record_time = now
 
     except KeyboardInterrupt:
