@@ -19,3 +19,5 @@ Route::get('telemetry/test', function(){
 Route::get('/test-db', function () {
     return Lap::with(['session', 'telemetryLogs', 'comments', 'likes'])->get();
 });
+
+Route::post('telemetry/status', [TelemetryController::class, 'updateStatus'])->middleware('auth:sanctum');

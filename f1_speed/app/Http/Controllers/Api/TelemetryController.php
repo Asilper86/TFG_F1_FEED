@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lap;
+use App\Models\Racing_session;
 use App\Models\Telemetry_log;
 use App\Models\User;
 use DB;
@@ -83,6 +84,20 @@ class TelemetryController extends Controller
         });
     }
 
+
+    public function updateStatus(Request $request){
+        $request->validate([
+            'session_id' => 'required|exists:racing_sessions,id',
+            'status' => 'required|array'
+        ]);
+
+        $session = Racing_session::findOrFail($request->session_id0);
+        $session->update([
+            'last_status_json' => $request->status
+        ]);
+
+        return response()->json(['message' => 'Status updated']);
+    }
     /**
      * Display the specified resource.
      */
