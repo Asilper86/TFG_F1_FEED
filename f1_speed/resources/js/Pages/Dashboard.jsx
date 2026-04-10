@@ -4,6 +4,8 @@ import StatsCards from '../Components/StatsCards';
 import Navbar from '../components/NavBar';
 import LapsTable from '../Components/LapsTable';
 import GraficoTelemetria from '../Components/GraficoTelemetria';
+import HUDCoche from '../Components/HUDCoche';
+import MapaCircuito from '../Components/MapaCircuito';
 
 export const formatLapTime = (totalSeconds) => {
     if (!totalSeconds) return '0:00.000';
@@ -34,12 +36,12 @@ export default function Dashboard({ laps, activeSession }) {
         const radar = setInterval(() => {
             setEncendido(true)
             router.reload({
-                only: ['laps'],
+                only: ['laps', 'activeSession'],
                 preserveScroll: true,
                 preserveState: true,
-                onFinish: () => setTimeout(() => setEncendido(false), 800)
+                onFinish: () => setTimeout(() => setEncendido(false), 500)
             });
-        }, 10000);
+        }, 2000);
 
         return () => clearInterval(radar);
 
@@ -53,8 +55,8 @@ export default function Dashboard({ laps, activeSession }) {
 
     const telemetryData = selectedLap?.telemetry_logs?.[0]?.telemetry_json;
 
-    const mejorVuelta = safeLaps.length > 0 ? [...safeLaps].sort((a, b) => a.lap_time - b.lap_time)[0] 
-    : null;
+    const mejorVuelta = safeLaps.length > 0 ? [...safeLaps].sort((a, b) => a.lap_time - b.lap_time)[0]
+        : null;
 
     const vueltaFantasma = mejorVuelta?.telemetry_logs?.[0]?.telemetry_json;
 
@@ -107,7 +109,7 @@ export default function Dashboard({ laps, activeSession }) {
                         )}
                     </div>
 
-                    <Link 
+                    <Link
                         href="/session/setup"
                         className="mt-4 md:mt-0 bg-[#E10600] hover:bg-[#ff0700] text-white text-[10px] font-black uppercase tracking-widest px-6 py-3 rounded italic transition-all active:scale-95"
                     >
@@ -116,15 +118,24 @@ export default function Dashboard({ laps, activeSession }) {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                    <div className="lg:col-span-1">
-                        <LapsTable
-                            laps={safeLaps}
-                            onSelectLap={setSelectedLap}
-                            selectedId={selectedLap?.id}
-                        />
+                    <div className="lg:col-span-1 space-y-6">
+                        <div className="flex items-center justify-between mb-3 px-1">
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 italic">
+                                Session History
+                                <span className="ml-2 px-1.5 py-0.5 bg-[#E10600] text-white rounded-sm text-[9px] not-italic">
+                                    {safeLaps.length} LAPS
+                                </span>
+                            </h4>
+                        </div>
+                        <LapsTable laps={safeLaps} onSelectLap={setSelectedLap} selectedId={selectedLap?.id} />
+                        <HUDCoche status={activeSession?.last_status_json} />
                     </div>
                     <div className="lg:col-span-3">
-                        <StatsCards laps={safeLaps} />
+                        <StatsCards
+                            laps={safeLaps}
+                            selectedLap={selectedLap}
+                            activeSession={activeSession}
+                        />
                         <div className="flex items-center justify-between mb-4 mt-8 bg-[#23262A] p-2 px-4 rounded border border-[#2d3136]">
                             <h4 className="text-[11px] font-bold uppercase tracking-widest text-white">PERFORMANCE TRACE</h4>
 
@@ -156,6 +167,7 @@ export default function Dashboard({ laps, activeSession }) {
                             </div>
                         </div>
                         <GraficoTelemetria data={chartData} visibleMetrics={visibleMetrics} />
+
                     </div>
                 </div>
             </main>

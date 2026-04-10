@@ -91,7 +91,7 @@ class TelemetryController extends Controller
             'status' => 'required|array'
         ]);
 
-        $session = Racing_session::findOrFail($request->session_id0);
+        $session = Racing_session::findOrFail($request->session_id);
         $session->update([
             'last_status_json' => $request->status
         ]);
@@ -128,5 +128,21 @@ class TelemetryController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function updateMetadata(Request $request){
+        $request->validate([
+            'session_id' => 'required|exists:racing_sessions,id',
+            'track_id' => 'required|string',
+            'car_id'=>'nullable|string'
+        ]);
+
+        $session = Racing_session::findOrFail($request->session_id);
+        $session->update([
+            'track_id'=> $request->track_id,
+            'car_id'=> $request->car_id,
+        ]);
+
+        return response()->json(['message'=> 'Metadata updated', 'track' => $request->track_id]); 
     }
 }

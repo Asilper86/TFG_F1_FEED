@@ -18,6 +18,17 @@ HEADERS = {
 
 HEADER_FORMAT = "<HBBBBBQfIIBB"
 HEADER_SIZE = 29
+TRACK_MAP = {
+    0: "Melbourne", 1: "Paul Ricard", 2: "Shanghai", 3: "Sakhir (Bahrain)", 
+    4: "Catalunya", 5: "Monaco", 6: "Montreal", 7: "Silverstone", 
+    8: "Hockenheim", 9: "Hungaroring", 10: "Spa", 11: "Monza", 
+    12: "Singapore", 13: "Suzuka", 14: "Abu Dhabi", 15: "Texas", 
+    16: "Brazil", 17: "Austria", 18: "Sochi", 19: "Mexico", 
+    20: "Baku", 21: "Sakhir Short", 22: "Silverstone Short", 
+    23: "Texas Short", 24: "Suzuka Short", 25: "Hanoi", 
+    26: "Zandvoort", 27: "Imola", 28: "Portimao", 29: "Jeddah", 
+    30: "Miami", 31: "Las Vegas", 32: "Losail"
+}
 
 def get_active_session_id():
     """Busca la sesión marcada como activa en tu Dashboard (vía API)."""
@@ -47,10 +58,13 @@ def run_bridge():
 
     current_lap_num = -1
     packet_count = 0
+    last_status_time = 0
+    current_x = 0 
+    current_z = 0
     
     
     
-    telemetria_acumulada = {"speed": [], "throttle": [], "brake": [], "gear": [], "distance": []}
+    telemetria_acumulada = {"speed": [], "throttle": [], "brake": [], "gear": [], "distance": [], "world_x": [], "world_z": []}
     last_record_time = 0
 
     try:
@@ -98,7 +112,7 @@ def run_bridge():
 
                 offset = HEADER_SIZE + (player_idx * 113)
                 lap_num = struct.unpack_from("<B", data, offset + 33)[0] 
-                lap_dist = struct.unpack_from("<f", data, offset + 20)[0]
+                lap_dist = struct.unpack_from("<f", data, offset + 18)[0]
                 
                 if current_lap_num == -1:
                     current_lap_num = lap_num
@@ -144,7 +158,7 @@ def run_bridge():
                     # === ZONA DE RESET (Limpieza para la siguiente vuelta) ===
                     print(f"[RESET] Preparando sensores para Vuelta {lap_num}...")
                     current_lap_num = lap_num
-                    telemetria_acumulada = {"speed": [], "throttle": [], "brake": [], "gear": [], "distance": []}
+                    telemetria_acumulada = {"speed": [], "throttle": [], "brake": [], "gear": [], "distance": [], "world_x": [], "world_z": []}
                     s1_done = False 
                     s2_done = False
                     final_s1_time = 0
@@ -165,6 +179,61 @@ def run_bridge():
                     telemetria_acumulada["gear"].append(int(tel[5]))
                     telemetria_acumulada["distance"].append(float(lap_dist))
                     last_record_time = now
+            elif packet_id == 10:
+                offset = HEADER_SIZE + (player_idx * 42)
+                tyres_wear = struct.unpack_from("<ffff", data, offset)
+                aleron_delantero_izq = struct.unpack_from("<B", data, offset + 16)[0]
+                aleron_delantero_der = struct.unpack_from("<B", data, offset + 17)[0]
+                aleron_trasero = struct.unpack_from("<B", data, offset + 18)[0]
+
+                now = time.time()
+                if now - last_status_time > 2.0:
+                    status_payload = {
+                        "session_id": session_id,
+                        "status": {
+                            "tyres_wear": [round(tw, 1) for tw in tyres_wear],
+                            "alerones": {
+                                "aleron_delantero_izq": aleron_delantero_izq,
+                                "aleron_delantero_der": aleron_delantero_der,
+                                "aleron_trasero": aleron_trasero
+                            },
+                            "position": {
+                                "x": current_x,
+                                "z": current_z
+                            }
+                        }
+                    }
+                    try: 
+                        requests.post(f"{API_BASE_URL}/telemetry/status", json=status_payload, headers=HEADERS, timeout=1)
+                        last_status_time = now
+                        print(f"[LIVE] Estado del coche sincronizado (Gomas: {status_payload['status']['tyres_wear']}%)")
+                    except: pass
+            elif packet_id == 0:
+                track_id_num = struct.unpack_from("<b", data, HEADER_SIZE + 7)[0]
+                track_name = TRACK_MAP.get(track_id_num, f"Unknown ({track_id_num})")
+
+                if 'current_track_detected' not in locals() or current_track_detected != track_name:
+                    print (f"[LIVE] Circuito detectado: {track_name}")
+                    try:
+                        meta_payload = {
+                            "session_id": session_id,
+                            "track_id": track_name
+                        }
+
+                        requests.post(f"{API_BASE_URL}/telemetry/metadata", json=meta_payload, headers=HEADERS, timeout=1)
+                        current_track_detected = track_name
+                    except: pass
+            elif packet_id == 1:
+                offset = HEADER_SIZE + (player_idx * 60)
+                coords = struct.unpack_from("<fff", data, offset)
+                current_x = round(coords[0], 2)
+                current_z = round(coords[2],2)
+
+                now = time.time()
+                if 'last_gps_time' not in locals() or now - last_gps_time > 0.2:
+                    telemetria_acumulada["world_x"].append(round(coords[0], 2))
+                    telemetria_acumulada["world_z"].append(round(coords[2], 2))
+                    last_gps_time = now
 
     except KeyboardInterrupt:
         print("\n[STOP] Puente detenido. ¡Nos vemos en boxes!")

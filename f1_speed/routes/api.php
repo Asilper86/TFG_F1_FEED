@@ -21,3 +21,4 @@ Route::get('/test-db', function () {
 });
 
 Route::post('telemetry/status', [TelemetryController::class, 'updateStatus'])->middleware('auth:sanctum');
+Route::post('telemetry/metadata', [TelemetryController::class, 'updateMetadata'])->middleware('auth:sanctum');
