@@ -4,7 +4,7 @@ import StatsCards from '../Components/StatsCards';
 import Navbar from '../components/NavBar';
 import LapsTable from '../Components/LapsTable';
 import GraficoTelemetria from '../Components/GraficoTelemetria';
-import HUDCoche from '../Components/HUDCoche';
+
 import MapaCircuito from '../Components/MapaCircuito';
 
 export const formatLapTime = (totalSeconds) => {
@@ -128,7 +128,6 @@ export default function Dashboard({ laps, activeSession }) {
                             </h4>
                         </div>
                         <LapsTable laps={safeLaps} onSelectLap={setSelectedLap} selectedId={selectedLap?.id} />
-                        <HUDCoche status={activeSession?.last_status_json} />
                     </div>
                     <div className="lg:col-span-3">
                         <StatsCards

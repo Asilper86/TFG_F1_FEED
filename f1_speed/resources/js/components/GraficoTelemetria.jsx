@@ -1,23 +1,24 @@
 import React from 'react';
-import { LineChart, ReferenceLine, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function GraficoTelemetria({ data, visibleMetrics = { speed: true, throttle: true, brake: true, gear: true } }) {
     if (!data || data.length === 0) {
         return (
-            <div className="w-full h-[375px] flex items-center justify-center bg-[#23262A] rounded-lg border border-[#2d3136]">
-                <span className="text-gray-500 tracking-widest text-xs uppercase">No telemetry data</span>
+            <div className="w-full h-[350px] flex items-center justify-center bg-[#23262A] rounded-lg border border-[#2d3136]">
+                <span className="text-gray-500 tracking-widest text-xs uppercase">Esperando datos de telemetría...</span>
             </div>
         );
     }
 
-    const CustomTooltip = ({ active, payload }) => {
+    const CustomTooltip = ({ active, payload, label }) => {
         if (active && payload && payload.length) {
             return (
-                <div className="bg-[#1A1D20] border border-[#333] p-4 rounded shadow-xl">
+                <div className="bg-[#1A1D20] border border-[#333] p-3 rounded shadow-xl">
+                    <p className="text-[10px] text-gray-400 mb-2 uppercase">Distancia: {Math.round(label)}m</p>
                     {payload.map((entry, index) => (
-                        <div key={index} className="flex items-center gap-6 justify-between mb-2 last:mb-0">
-                            <span style={{ color: entry.color }} className="text-[11px] font-semibold uppercase">{entry.name}</span>
-                            <span className="text-white font-mono font-bold text-sm">{entry.value}</span>
+                        <div key={index} className="flex items-center justify-between gap-4 mb-1">
+                            <span style={{ color: entry.color }} className="text-[10px] font-bold uppercase">{entry.name}:</span>
+                            <span className="text-white font-mono text-xs">{entry.value}</span>
                         </div>
                     ))}
                 </div>
@@ -27,58 +28,86 @@ export default function GraficoTelemetria({ data, visibleMetrics = { speed: true
     };
 
     return (
-        <div className="w-full h-[375px] bg-[#23262A] p-6 pt-8 rounded-lg border border-[#2d3136]">
+        <div className="w-full h-[350px] bg-[#23262A] p-4 rounded-lg border border-[#2d3136]">
             <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#2d3136" vertical={false} />
                     <XAxis
+                        dataKey="distance"
                         type="number"
                         domain={['dataMin', 'dataMax']}
-                        dataKey="distance"
                         stroke="#555"
-                        tickFormatter={(value) => `${Math.round(value)}m`}
-                        minTickGap={50}
                         tick={{ fontSize: 10 }}
-                        axisLine={{ stroke: '#333' }}
+                        tickFormatter={(v) => `${Math.round(v)}m`}
                     />
+                    <YAxis yAxisId="left" stroke="#888" tick={{ fontSize: 10 }} domain={[0, 360]} />
+                    <YAxis yAxisId="right" orientation="right" stroke="#888" tick={{ fontSize: 10 }} domain={[0, 100]} />
 
-                    <YAxis yAxisId="left" stroke="#888" tick={{ fill: '#888', fontSize: 11 }} axisLine={false} tickLine={false} />
-                    <YAxis yAxisId="right" orientation="right" stroke="#888" domain={[0, 100]} tick={{ fill: '#888', fontSize: 11 }} axisLine={false} tickLine={false} />
-                    <YAxis yAxisId="gear" orientation='right' domain={[0, 10]} hide={true} />
-                    <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#444', strokeWidth: 1 }} />
-                    <Legend wrapperStyle={{ paddingTop: '15px' }} iconType="circle" iconSize={6} />
+                    <Tooltip content={<CustomTooltip />} />
+
                     {visibleMetrics.speed && (
-                        <Line yAxisId="left" type="monotone" name="SPEED" dataKey="speed" stroke="#3FA9F5" dot={false} strokeWidth={2} activeDot={{ r: 4, fill: '#3FA9F5', stroke: '#1A1D20', strokeWidth: 2 }} />
+                        <Line
+                            yAxisId="left"
+                            type="monotone"
+                            name="SPEED"
+                            dataKey="speed"
+                            stroke="#3FA9F5"
+                            dot={false}
+                            strokeWidth={2}
+                            isAnimationActive={false}
+                        />
                     )}
                     {visibleMetrics.throttle && (
-                        <Line yAxisId="right" type="monotone" name="THROTTLE" dataKey="throttle" stroke="#10b981" dot={false} strokeWidth={2} />
+                        <Line
+                            yAxisId="right"
+                            type="monotone"
+                            name="THROTTLE"
+                            dataKey="throttle"
+                            stroke="#10b981"
+                            dot={false}
+                            strokeWidth={2}
+                            isAnimationActive={false}
+                        />
                     )}
                     {visibleMetrics.brake && (
-                        <Line yAxisId="right" type="monotone" name="BRAKE" dataKey="brake" stroke="#E10600" dot={false} strokeWidth={2} />
-                    )}
-                    {visibleMetrics.gear && (
-                        <Line yAxisId="gear" type="stepAfter" name="GEAR" dataKey="gear" stroke="#eab308" dot={false} strokeWidth={2} />
+                        <Line
+                            yAxisId="right"
+                            type="monotone"
+                            name="BRAKE"
+                            dataKey="brake"
+                            stroke="#E10600"
+                            dot={false}
+                            strokeWidth={2}
+                            isAnimationActive={false}
+                        />
                     )}
 
-                    {data[0]?.s1_dist && (
-                        <ReferenceLine x={data[0].s1_dist} stroke="#c026d3" label={{ value: 'S1', fill: '#c026d3', fontSize: 10 }} strokeDasharray="3 3" />
+                    {visibleMetrics.gear && (
+                        <Line
+                            yAxisId="right"  
+                            type="stepAfter" 
+                            name="GEAR"
+                            dataKey={(d) => d.gear * 10}
+                            stroke="#eab308"
+                            dot={false}
+                            strokeWidth={2}
+                            isAnimationActive={false}
+                        />
                     )}
-                    {data[0]?.s2_dist && (
-                        <ReferenceLine x={data[0].s2_dist} stroke="#c026d3" label={{ value: 'S2', fill: '#c026d3', fontSize: 10 }} strokeDasharray="3 3" />
-                    )}
+
                     <Line
                         yAxisId="left"
                         type="monotone"
                         dataKey="speedGhost"
                         stroke="#3FA9F5"
-                        strokeWidth={2}
+                        strokeWidth={1.5}
                         strokeOpacity={0.2}
                         strokeDasharray="5 5"
                         dot={false}
                         name="BEST REFERENCE"
+                        isAnimationActive={false}
                     />
                 </LineChart>
-
             </ResponsiveContainer>
         </div>
     );
