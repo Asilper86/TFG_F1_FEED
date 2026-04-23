@@ -145,4 +145,15 @@ class TelemetryController extends Controller
 
         return response()->json(['message'=> 'Metadata updated', 'track' => $request->track_id]); 
     }
+
+    public function cerrarSesion(Request $request){
+        $request->validate(['session_id'=> 'required|exists:racing_sessions,id']);
+
+        $session = Racing_session::findOrFail($request->session_id);
+
+        $session->update([
+            'is_active' => false
+        ]);
+        return response()->json(['message' => 'Sesion cerrada correctamente']);
+    }
 }
