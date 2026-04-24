@@ -24,6 +24,9 @@ export default function Navbar({ user }) {
                     <Link href="/session/setup" className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">
                         Setup de Sesión
                     </Link>
+                    <a href="/feed" className='text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors'>
+                        AUTO FEED
+                    </a>
                 </div>
 
                 <div className="flex items-center space-x-6">

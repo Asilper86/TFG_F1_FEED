@@ -8,12 +8,22 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Comment extends Model
 {
-    protected $fillable = ['user_id', 'body'];
+    protected $fillable = ['user_id', 'body', 'media_path'];
 
     public function user():BelongsTo{
         return $this->belongsTo(User::class);
     }
     public function commentable():MorphTo{
         return $this->morphTo();
+    }
+
+    public function likes()
+    {
+        return $this->morphMany(Like::class, 'likeable');
+    }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
     }
 }

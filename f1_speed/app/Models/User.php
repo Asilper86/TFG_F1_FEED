@@ -66,6 +66,8 @@ class User extends Authenticatable
         ];
     }
 
+    // --- RELACIONES DE TELEMETRÍA Y RED SOCIAL ---
+
     public function racingSessions(): HasMany
     {
         return $this->hasMany(Racing_session::class);
@@ -84,5 +86,16 @@ class User extends Authenticatable
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
+    }
+
+
+    public function following()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'followed_id')->withTimestamps();
+    }
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'followed_id', 'follower_id')->withTimestamps();
     }
 }
