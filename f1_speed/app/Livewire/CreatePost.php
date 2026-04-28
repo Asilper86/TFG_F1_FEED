@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Hashtag;
 use App\Models\Social_post;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -24,12 +25,20 @@ class CreatePost extends Component
             $path = $this->media->store('social_post', 'public');
         }
 
-        Social_post::create([
+        $post = Social_post::create([
             'user_id' => auth()->id(),
             'content' => $this->content,
             'media_path' => $path,
 
         ]);
+
+        preg_match_all('/#(\w+)/', $this->content, $matches);
+        if (!empty($matches[1])) {
+            foreach ($matches[1] as $tagName) {
+                $hashtag = Hashtag::firstOrCreate(['name' => strtolower($tagName)]);
+                $post->hashtags()->attach($hashtag->id);
+            }
+        }
 
         $this->reset(['content', 'media']);
         $this->dispatch('post-created');

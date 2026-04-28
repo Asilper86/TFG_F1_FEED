@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, router } from '@inertiajs/react';
+import { Link, router, Head } from '@inertiajs/react';
 
 export default function AuthenticatedLayout({ user, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
@@ -10,36 +10,49 @@ export default function AuthenticatedLayout({ user, header, children }) {
     };
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white">
-            {/* Barra de Navegación */}
-            <nav className="bg-[#0f0f0f] border-b border-white/5 sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-16 items-center">
-                        <div className="flex items-center">
-                            {/* Logo */}
-                            <Link href="/" className="flex items-center">
-                                <span className="text-xl font-black italic tracking-tighter uppercase">
-                                    F1<span className="text-red-600">SPEED</span>
-                                </span>
-                            </Link>
+        <div className="min-h-screen bg-[#121418] text-white font-sans">
+            <Head>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+            </Head>
 
-                            {/* Enlace Simple (Sustituye a NavLink) */}
-                            <div className="hidden sm:flex sm:ms-10">
-                                <Link href={route('dashboard')} className="text-sm font-bold uppercase tracking-widest text-red-600 border-b-2 border-red-600 pb-1">
-                                    Race Control
+            {/* Barra de Navegación Estilo F1 */}
+            <nav className="bg-[#1B1D21] border-b border-[#2d3136] sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16">
+                        <div className="flex items-center gap-8">
+                            {/* Logo */}
+                            <div className="shrink-0 flex items-center">
+                                <Link href={route('dashboard')} className="text-xl font-bold tracking-wide uppercase flex items-center gap-2 text-white">
+                                    <span className="text-[#E10600]">/</span> F1 SPEED
+                                </Link>
+                            </div>
+
+                            {/* Links de Navegación Identicos a Blade */}
+                            <div className="hidden space-x-6 sm:flex sm:items-center sm:ms-6">
+                                <Link href={route('dashboard')} className={`text-[15px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 ${route().current('dashboard') ? 'text-white' : 'text-gray-500 hover:text-[#E10600]'}`}>
+                                    <i className="fa-solid fa-gauge"></i>Dashboard
+                                </Link>
+                                <Link href={route('social.feed')} className={`text-[15px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 ${route().current('social.feed') ? 'text-white' : 'text-gray-500 hover:text-[#E10600]'}`}>
+                                    <i className="fa-solid fa-rss"></i>AUTO FEED
+                                </Link>
+                                <Link href={route('social.profile')} className={`text-[15px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 ${route().current('social.profile') ? 'text-white' : 'text-gray-500 hover:text-[#E10600]'}`}>
+                                    <i className="fa-solid fa-user"></i>MI PERFIL
+                                </Link>
+                                <Link href={route('social.search')} className={`text-[15px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 ${route().current('social.search') ? 'text-white' : 'text-gray-500 hover:text-[#E10600]'}`}>
+                                    <i className="fa-solid fa-magnifying-glass"></i>BUSCADOR
                                 </Link>
                             </div>
                         </div>
 
-                        {/* Menú de Usuario Simple (Sustituye a Dropdown) */}
-                        <div className="hidden sm:flex sm:items-center">
+                        {/* Menú Usuario Simple */}
+                        <div className="hidden sm:flex sm:items-center sm:ms-6">
                             <div className="flex items-center space-x-4">
                                 <span className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">
                                     Piloto: <span className="text-white">{user.name}</span>
                                 </span>
                                 <button 
                                     onClick={logout}
-                                    className="text-[10px] uppercase tracking-widest bg-red-600/10 text-red-500 px-3 py-1 rounded border border-red-500/20 hover:bg-red-600 hover:text-white transition-all"
+                                    className="text-[10px] uppercase tracking-widest text-[#E10600] hover:text-[#ff0700] font-bold transition-all"
                                 >
                                     Cerrar Box
                                 </button>
@@ -49,18 +62,17 @@ export default function AuthenticatedLayout({ user, header, children }) {
                 </div>
             </nav>
 
-            {/* Cabecera */}
+            {/* Cabecera (Opcional) */}
             {header && (
-                <header className="bg-[#050505] border-b border-white/5">
+                <header className="bg-[#121418] border-b border-white/5">
                     <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {header}
                     </div>
                 </header>
             )}
 
-            {/* Contenido */}
+            {/* Contenido principal */}
             <main className="relative">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-red-600/5 blur-[100px] pointer-events-none"></div>
                 <div className="relative z-10">
                     {children}
                 </div>

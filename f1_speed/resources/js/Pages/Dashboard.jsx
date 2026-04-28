@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Head, usePage, router, Link } from '@inertiajs/react';
 import StatsCards from '../Components/StatsCards';
-import Navbar from '../components/NavBar';
+import Navbar from '../Components/NavBar';
 import LapsTable from '../Components/LapsTable';
 import GraficoTelemetria from '../Components/GraficoTelemetria';
-
 import MapaCircuito from '../Components/MapaCircuito';
 
 export const formatLapTime = (totalSeconds) => {
@@ -14,10 +13,6 @@ export const formatLapTime = (totalSeconds) => {
     const formatoSegundos = segundos < 10 ? `0${segundos.toFixed(3)}` : segundos.toFixed(3);
     return `${minutos}:${formatoSegundos}`;
 };
-
-
-
-
 
 export default function Dashboard({ laps, activeSession }) {
     const { auth } = usePage().props;
@@ -30,7 +25,6 @@ export default function Dashboard({ laps, activeSession }) {
         brake: false,
         gear: false,
     })
-
 
     React.useEffect(() => {
         const radar = setInterval(() => {
@@ -75,12 +69,12 @@ export default function Dashboard({ laps, activeSession }) {
     }
 
     return (
-        <div className="min-h-screen bg-[#1B1D21] text-white font-sans selection:bg-[#E10600]/30 pb-12">
+        <div className="min-h-screen bg-[#121418] text-white font-sans selection:bg-[#E10600]/30">
             <Head title="Telemetry Dashboard" />
 
             <Navbar user={auth.user} />
 
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-4 border-b border-[#2d3136]">
                     <div className="flex items-center gap-6">
@@ -98,7 +92,7 @@ export default function Dashboard({ laps, activeSession }) {
                         </h1>
 
                         {activeSession && (
-                            <div className="hidden lg:flex items-center gap-4 bg-[#23262A] px-4 py-2 rounded-lg border border-[#2d3136]">
+                            <div className="hidden lg:flex items-center gap-4 bg-[#1B1D21] px-4 py-2 rounded-lg border border-[#2d3136]">
                                 <div className="text-left">
                                     <p className="text-[8px] uppercase tracking-[0.2em] text-gray-500 font-bold mb-0.5">Active Setup</p>
                                     <p className="text-[10px] font-bold uppercase tracking-widest text-white">
@@ -135,31 +129,31 @@ export default function Dashboard({ laps, activeSession }) {
                             selectedLap={selectedLap}
                             activeSession={activeSession}
                         />
-                        <div className="flex items-center justify-between mb-4 mt-8 bg-[#23262A] p-2 px-4 rounded border border-[#2d3136]">
+                        <div className="flex items-center justify-between mb-4 mt-8 bg-[#1B1D21] p-2 px-4 rounded border border-[#2d3136]">
                             <h4 className="text-[11px] font-bold uppercase tracking-widest text-white">PERFORMANCE TRACE</h4>
 
                             <div className="flex space-x-2">
                                 <button
                                     onClick={() => cambiarMetricas('speed')}
-                                    className={`px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.speed ? 'bg-[#3FA9F5]/20 text-[#3FA9F5] border border-[#3FA9F5]/50' : 'bg-[#1B1D21] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
+                                    className={`px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.speed ? 'bg-[#3FA9F5]/20 text-[#3FA9F5] border border-[#3FA9F5]/50' : 'bg-[#121418] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
                                 >
                                     SPEED
                                 </button>
                                 <button
                                     onClick={() => cambiarMetricas('throttle')}
-                                    className={`px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.throttle ? 'bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/50' : 'bg-[#1B1D21] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
+                                    className={`px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.throttle ? 'bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/50' : 'bg-[#121418] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
                                 >
                                     THROTTLE
                                 </button>
                                 <button
                                     onClick={() => cambiarMetricas('brake')}
-                                    className={`px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.brake ? 'bg-[#E10600]/20 text-[#E10600] border border-[#E10600]/50' : 'bg-[#1B1D21] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
+                                    className={`px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.brake ? 'bg-[#E10600]/20 text-[#E10600] border border-[#E10600]/50' : 'bg-[#121418] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
                                 >
                                     BRAKE
                                 </button>
                                 <button
                                     onClick={() => cambiarMetricas('gear')}
-                                    className={`px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.gear ? 'bg-[#eab308]/20 text-[#eab308] border border-[#eab308]/50' : 'bg-[#1B1D21] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
+                                    className={`px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.gear ? 'bg-[#eab308]/20 text-[#eab308] border border-[#eab308]/50' : 'bg-[#121418] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
                                 >
                                     GEAR
                                 </button>

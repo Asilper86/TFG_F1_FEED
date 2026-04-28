@@ -12,11 +12,17 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-6 sm:flex sm:items-center sm:ms-6">
-                    <a href="{{ route('dashboard') }}" class="text-[10px] font-bold uppercase tracking-widest transition-colors {{ request()->routeIs('dashboard') ? 'text-white' : 'text-gray-500 hover:text-[#E10600]' }}">
-                        Dashboard
+                    <a href="{{ route('dashboard') }}" class="text-[15px] font-bold uppercase tracking-widest transition-colors {{ request()->routeIs('dashboard') ? 'text-white' : 'text-gray-500 hover:text-[#E10600]' }}">
+                        <i class="fa-solid fa-gauge text-[#E10600] mr-1"></i>Dashboard
                     </a>
-                    <a href="{{ route('social.feed') }}" class="text-[10px] font-bold uppercase tracking-widest transition-colors {{ request()->routeIs('social.feed') ? 'text-white' : 'text-gray-500 hover:text-[#E10600]' }}">
-                        AUTO FEED
+                    <a href="{{ route('social.feed') }}" class="text-[15px] font-bold uppercase tracking-widest transition-colors {{ request()->routeIs('social.feed') ? 'text-white' : 'text-gray-500 hover:text-[#E10600]' }}">
+                        <i class="fa-solid fa-rss text-[#E10600] mr-1"></i> AUTO FEED
+                    </a>
+                    <a href="{{ route('social.profile') }}" class="text-[15px] font-bold uppercase tracking-widest transition-colors {{ request()->routeIs('social.profile') ? 'text-white' : 'text-gray-500 hover:text-[#E10600]' }}">
+                        <i class="fa-solid fa-user text-[#E10600] mr-1"></i>MI PERFIL
+                    </a>
+                    <a href="{{ route('social.search') }}" class="text-[15px] font-bold uppercase tracking-widest transition-colors {{ request()->routeIs('social.search') ? 'text-white' : 'text-gray-500 hover:text-[#E10600]' }}">
+                        <i class="fa-solid fa-magnifying-glass text-[#E10600] mr-1"></i>BUSCADOR
                     </a>
                 </div>
             </div>
@@ -83,44 +89,58 @@
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-[#1B1D21] border-t border-[#2d3136]">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')" class="text-gray-300 hover:text-white hover:bg-[#23262A]">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link href="{{ route('social.feed') }}" :active="request()->routeIs('social.feed')" class="text-gray-300 hover:text-white hover:bg-[#23262A]">
-                RED SOCIAL
-            </x-responsive-nav-link>
-        </div>
-
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-[#2d3136]">
-            <div class="flex items-center px-4">
-                @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                    <div class="shrink-0 me-3">
-                        <img class="size-10 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
-                    </div>
-                @endif
-
-                <div>
-                    <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-gray-400">{{ Auth::user()->email }}</div>
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden fixed inset-0 z-50 bg-[#1B1D21]">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-10">
+                <div class="text-xl font-bold tracking-wide uppercase flex items-center gap-2 text-white">
+                    <span class="text-[#E10600]">/</span> F1 SPEED
                 </div>
+                <button @click="open = false" class="text-gray-400 hover:text-white">
+                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
 
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')" class="text-gray-300 hover:text-white hover:bg-[#23262A]">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
+            <div class="space-y-8">
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-4 text-lg font-bold uppercase tracking-[0.1em] {{ request()->routeIs('dashboard') ? 'text-white' : 'text-gray-400' }}">
+                    <i class="fa-solid fa-gauge text-[#E10600] w-6 text-center"></i> DASHBOARD
+                </a>
+                <a href="{{ route('social.feed') }}" class="flex items-center gap-4 text-lg font-bold uppercase tracking-[0.1em] {{ request()->routeIs('social.feed') ? 'text-white' : 'text-gray-400' }}">
+                    <i class="fa-solid fa-rss text-[#E10600] w-6 text-center"></i> AUTO FEED
+                </a>
+                <a href="{{ route('social.profile') }}" class="flex items-center gap-4 text-lg font-bold uppercase tracking-[0.1em] {{ request()->routeIs('social.profile') ? 'text-white' : 'text-gray-400' }}">
+                    <i class="fa-solid fa-user text-[#E10600] w-6 text-center"></i> MI PERFIL
+                </a>
+                <a href="{{ route('social.search') }}" class="flex items-center gap-4 text-lg font-bold uppercase tracking-[0.1em] {{ request()->routeIs('social.search') ? 'text-white' : 'text-gray-400' }}">
+                    <i class="fa-solid fa-magnifying-glass text-[#E10600] w-6 text-center"></i> BUSCADOR
+                </a>
+            </div>
 
-                <!-- Authentication -->
+            <div class="mt-12 pt-8 border-t border-[#2d3136]">
+                <div class="flex items-center gap-4 mb-10">
+                    @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
+                        <img class="size-12 rounded-full object-cover border-2 border-[#E10600]" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
+                    @else
+                        <div class="w-12 h-12 rounded-full bg-[#E10600] flex items-center justify-center text-white font-black text-lg italic">
+                            {{ substr(Auth::user()->name, 0, 1) }}
+                        </div>
+                    @endif
+
+                    <div>
+                        <div class="text-lg font-black uppercase tracking-widest text-white italic">{{ Auth::user()->name }}</div>
+                        <div class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em]">PILOTO ACTIVO</div>
+                    </div>
+                </div>
+                
                 <form method="POST" action="{{ route('logout') }}" x-data>
                     @csrf
-
-                    <x-responsive-nav-link href="{{ route('logout') }}"
-                                   @click.prevent="$root.submit();" class="text-[#E10600] hover:text-white hover:bg-[#23262A]">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
+                    <button 
+                        @click.prevent="$root.submit();" 
+                        class="text-[#E10600] text-sm font-black uppercase tracking-[0.2em] hover:text-[#ff0700] transition-colors"
+                    >
+                        CERRAR BOX
+                    </button>
                 </form>
             </div>
         </div>

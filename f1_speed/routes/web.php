@@ -26,6 +26,7 @@ Route::middleware([
     Route::post('session/setup', [\App\Http\Controllers\RacingSessionController::class, 'store'])->name('session.store');
     Route::get('/feed', SocialFeed::class)->name('social.feed');
     Route::get('/profile/{user?}', \App\Livewire\UserProfile::class)->name('social.profile');
+    Route::get('/search', \App\Livewire\SearchGlobal::class)->name('social.search');
 });
 
 
