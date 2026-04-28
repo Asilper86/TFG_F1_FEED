@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Social_post;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -21,7 +22,7 @@ class SocialFeed extends Component
         $post = Social_post::find($postId);
         if ($post && auth()->id() === $post->user_id) {
             if ($post->media_path) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($post->media_path);
+                Storage::disk('public')->delete($post->media_path);
             }
             $post->delete();
         }

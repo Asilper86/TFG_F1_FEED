@@ -100,4 +100,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(User::class, 'follows', 'followed_id', 'follower_id')->withTimestamps();
     }
+
+    public function f1Notifications(): HasMany
+    {
+        return $this->hasMany(F1Notification::class)->latest();
+    }
+
+    public function unreadNotificationsCount(): int
+    {
+        return $this->f1Notifications()->whereNull('read_at')->count();
+    }
 }

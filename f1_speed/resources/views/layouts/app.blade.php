@@ -15,6 +15,8 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.jsx'])
 
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
         <!-- Styles -->
         @livewireStyles
     </head>
@@ -22,7 +24,7 @@
         <x-banner />
 
         <div class="min-h-screen bg-[#121418]">
-            @livewire('navigation-menu')
+            @include('navigation-menu')
 
             <!-- Page Heading -->
             @if (isset($header))

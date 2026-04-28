@@ -40,8 +40,23 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             //
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user() ? array_merge(
+                    $request->user()->toArray(),
+                    [
+                        'notifications' => $request->user()
+                            ->f1Notifications()
+                            ->with('actor:id,name,profile_photo_path')
+                            ->latest()
+                            ->limit(15)
+                            ->get(),
+                        'unread_notifications_count' => $request->user()
+                            ->f1Notifications()
+                            ->whereNull('read_at')
+                            ->count(),
+                    ]
+                ) : null,
             ],
+
         ];
     }
 }

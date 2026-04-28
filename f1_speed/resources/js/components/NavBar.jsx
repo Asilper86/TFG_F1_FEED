@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Link, router } from '@inertiajs/react'; 
+import { Link, router } from '@inertiajs/react';
 
 export default function Navbar({ user }) {
     const [isOpen, setIsOpen] = useState(false);
+    const [notifOpen, setNotifOpen] = useState(false);
 
     const handleLogout = () => {
         router.post('/logout', {}, {
@@ -11,9 +12,9 @@ export default function Navbar({ user }) {
             }
         })
     }
-    
+
     const isCurrent = (path) => window.location.pathname.includes(path);
-    
+
     return (
         <nav className="bg-[#1B1D21] border-b border-[#2d3136] sticky top-0 z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,7 +57,47 @@ export default function Navbar({ user }) {
                                     {user?.name}
                                 </span>
                             </div>
-                            <button 
+                            <div className="relative">
+                                <button
+                                    onClick={() => setNotifOpen(!notifOpen)}
+                                    className="relative text-gray-400 hover:text-white transition-colors"
+                                >
+                                    <i className="fa-solid fa-bell text-lg"></i>
+                                    {user?.unread_notifications_count > 0 && (
+                                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#E10600] rounded-full text-[9px] font-black flex items-center justify-center text-white">
+                                            {user.unread_notifications_count}
+                                        </span>
+                                    )}
+                                </button>
+                                {notifOpen && (
+                                    <div className="absolute right-0 mt-3 w-80 bg-[#1B1D21] border border-[#2d3136] rounded-xl shadow-2xl z-50 overflow-hidden">
+                                        <div className="px-4 py-3 border-b border-[#2d3136] flex justify-between items-center">
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-white">Notificaciones</span>
+                                            <a href="/notifications/read-all" className="text-[9px] text-gray-500 hover:text-white uppercase tracking-widest">
+                                                Marcar todo leído
+                                            </a>
+                                        </div>
+                                        <div className="max-h-80 overflow-y-auto">
+                                            {user?.notifications?.length > 0 ? (
+                                                user.notifications.map((n, i) => (
+                                                    <div key={i} className={`px-4 py-3 border-b border-[#2d3136] hover:bg-[#23262A] transition-colors ${!n.read_at ? 'border-l-2 border-l-[#E10600]' : ''}`}>
+                                                        <p className="text-xs text-gray-300">
+                                                            <span className="font-bold text-white">{n.actor?.name}</span>
+                                                            {n.type === 'like' && ' le dio like a tu post'}
+                                                            {n.type === 'follow' && ' empezó a seguirte'}
+                                                            {n.type === 'repost' && ' reposteó tu publicación'}
+                                                        </p>
+                                                        <p className="text-[9px] text-gray-600 mt-1 uppercase tracking-widest">{n.created_at}</p>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <p className="text-center text-gray-600 text-xs py-8 uppercase tracking-widest">Sin notificaciones</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            <button
                                 onClick={handleLogout}
                                 className="text-[10px] uppercase tracking-widest text-[#E10600] hover:text-[#ff0700] font-bold transition-all px-3 py-1.5 bg-[#121418] rounded border border-[#2d3136]"
                             >
@@ -67,7 +108,7 @@ export default function Navbar({ user }) {
 
                     {/* Mobile Hamburger Button */}
                     <div className="flex items-center lg:hidden">
-                        <button 
+                        <button
                             onClick={() => setIsOpen(!isOpen)}
                             className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-[#23262A] focus:outline-none transition-colors"
                         >
@@ -123,8 +164,8 @@ export default function Navbar({ user }) {
                             )}
                             <span className="text-lg font-black uppercase tracking-widest text-white italic">{user?.name}</span>
                         </div>
-                        
-                        <button 
+
+                        <button
                             onClick={handleLogout}
                             className="text-[#E10600] text-sm font-black uppercase tracking-[0.2em] hover:text-[#ff0700] transition-colors"
                         >

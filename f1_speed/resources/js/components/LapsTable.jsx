@@ -5,12 +5,34 @@ import { formatLapTime } from '../Pages/Dashboard';
 export default function LapsTable({ laps, onSelectLap, selectedId }) {
     const handleDelete = (e, lapId) => {
         e.stopPropagation();
-        if (confirm("Delete lap data?")) {
+        if (confirm("¿Eliminar los datos de esta vuelta?")) {
             router.delete(`/telemetry/lap/${lapId}`);
         }
     }
 
-    // Calculadora de Sectores Morados
+    const handleShare = (e, lap) => {
+        e.stopPropagation();
+
+        // Nombres para el mensaje sugerido
+        const tracks = { '1': 'Monza', '2': 'Spa', '3': 'Silverstone', '4': 'Monaco', '5': 'Barcelona' };
+        const cars = { '1': 'Ferrari', '2': 'Red Bull', '3': 'Mercedes', '4': 'McLaren', '5': 'Aston Martin' };
+
+        const trackName = tracks[lap.session.track_id] || 'Circuito';
+        const carName = cars[lap.session.car_id] || 'Coche';
+        const time = formatLapTime(lap.lap_time);
+
+        const defaultMsg = `¡Acabo de volar en ${trackName} con el ${carName}! Tiempo: ${time} #F1Speed`;
+
+        const userMsg = prompt("Escribe tu mensaje para el muro:", defaultMsg);
+
+        if (userMsg) {
+            router.post('/telemetry/share-lap', {
+                lap_id: lap.id,
+                content: userMsg
+            });
+        }
+    }
+
     let mejorS1 = 999, mejorS2 = 999, mejorS3 = 999;
     laps.forEach(lap => {
         if (parseFloat(lap.sector_1) > 0 && parseFloat(lap.sector_1) < mejorS1) mejorS1 = parseFloat(lap.sector_1);
@@ -40,11 +62,26 @@ export default function LapsTable({ laps, onSelectLap, selectedId }) {
                                     <span className={`text-sm font-semibold tracking-wide ${isActive ? 'text-white' : 'text-gray-400'}`}>
                                         L{lap.lap_number}
                                     </span>
-                                    <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-3">
                                         <span className={`font-mono text-sm ${isActive ? 'text-white' : 'text-gray-400'}`}>
                                             {formatLapTime(lap.lap_time)}
                                         </span>
-                                        <button onClick={(e) => handleDelete(e, lap.id)} className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-[#E10600] transition-opacity px-1" title="Delete">✕</button>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={(e) => handleShare(e, lap)}
+                                                className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-[#3FA9F5] transition-opacity"
+                                                title="Publicar en Feed"
+                                            >
+                                                <i className="fa-solid fa-share-nodes"></i>
+                                            </button>
+                                            <button 
+                                                onClick={(e) => handleDelete(e, lap.id)} 
+                                                className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-[#E10600] transition-opacity" 
+                                                title="Eliminar"
+                                            >
+                                                <i className="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 

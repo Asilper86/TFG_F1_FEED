@@ -58,7 +58,7 @@
 
         @if ($displayPost->content)
             <p class="text-gray-300 text-sm mb-4 leading-relaxed whitespace-pre-line">
-                {{ $displayPost->content }}
+                {!! App\Helpers\TextHelper::parseHashtags($displayPost->content) !!}
             </p>
         @endif
 
@@ -70,34 +70,34 @@
         @endif
 
         @if ($displayPost->lap)
-            <div class="mb-4 bg-[#1B1D21] border border-[#2d3136] rounded-lg overflow-hidden relative group">
+            @php
+                $tracks = ['1' => 'Monza', '2' => 'Spa', '3' => 'Silverstone', '4' => 'Monaco', '5' => 'Barcelona'];
+                $cars = ['1' => 'Ferrari', '2' => 'Red Bull', '3' => 'Mercedes', '4' => 'McLaren', '5' => 'Aston Martin'];
+                $trackName = $tracks[$displayPost->lap->session->track_id] ?? 'Circuito';
+                $carName = $cars[$displayPost->lap->session->car_id] ?? 'F1 Car';
+            @endphp
+
+            <div class="mb-4 bg-[#121418] border border-[#2d3136] rounded-lg overflow-hidden relative group">
                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#E10600]"></div>
-
-                <div class="p-4 pl-5">
-                    <div class="flex justify-between items-start mb-2">
-                        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#E10600]">
-                            DATOS DE TELEMETRÍA
-                        </p>
-                        <p class="text-[10px] uppercase text-gray-500 font-bold">Circuito: <span
-                                class="text-white">{{ $displayPost->lap->session->track_id }}</span></p>
-                    </div>
-
-                    <div class="flex items-end justify-between">
-                        <div>
-                            <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Tiempo de Vuelta</p>
-                            <p class="text-2xl font-black text-white font-mono">
+                
+                <div class="p-4 pl-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-[9px] font-black uppercase tracking-[0.2em] text-[#E10600] mb-1">DATA LOG: {{ $trackName }}</p>
+                        <div class="flex items-baseline gap-3">
+                            <p class="text-xl font-black text-white font-mono">
                                 {{ floor($displayPost->lap->lap_time / 60) }}:{{ str_pad(number_format(fmod($displayPost->lap->lap_time, 60), 3), 6, '0', STR_PAD_LEFT) }}
                             </p>
+                            <span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">{{ $carName }}</span>
                         </div>
-
-                        <a href="{{ route('dashboard') }}"
-                            class="text-[9px] bg-[#23262A] hover:bg-[#2d3136] text-white border border-[#2d3136] font-bold uppercase tracking-widest px-3 py-1.5 rounded transition-colors">
-                            Analizar Vuelta →
-                        </a>
                     </div>
+                    
+                    <a href="{{ route('dashboard') }}" class="bg-[#1B1D21] hover:bg-[#2d3136] text-white text-[9px] font-bold uppercase tracking-widest px-4 py-2 rounded border border-[#2d3136] transition-all">
+                        Ver Telemetría →
+                    </a>
                 </div>
             </div>
         @endif
+
 
         <div class="flex items-center gap-6 mt-4 pt-4 border-t border-[#2d3136]">
             <button wire:click="toggleLike"
@@ -140,56 +140,47 @@
             </button>
         </div>
 
-        @if ($showComments)
-            <div class="mt-4 pt-4 border-t border-[#2d3136]">
-                <form wire:submit.prevent="addComment" class="mb-6">
-                    <div class="flex gap-3">
-                        <img src="{{ auth()->user()->profile_photo_url }}"
-                            class="w-8 h-8 rounded-full border border-[#2d3136] object-cover">
-                        <div class="flex-1">
-                            <input type="text" wire:model="newComment" placeholder="Postea tu respuesta..."
-                                class="w-full bg-[#1B1D21] border-b border-transparent focus:border-[#E10600] text-white text-sm placeholder-gray-500 py-1 px-0 shadow-none focus:ring-0 transition-colors">
-                            @error('newComment')
-                                <span class="text-[#E10600] text-xs font-bold block">{{ $message }}</span>
-                            @enderror
-                            @error('commentMedia')
-                                <span class="text-[#E10600] text-xs font-bold block">{{ $message }}</span>
-                            @enderror
+¡        @if ($showComments)
+            @php $displayPost = $post->original_post_id ? $post->originalPost : $post; @endphp
+            <div class="mt-6 space-y-4 border-t border-[#2d3136] pt-6">
+                @foreach ($displayPost->comments as $comment)
+                    @livewire('comment-item', ['comment' => $comment], key('comment-' . $comment->id))
+                @endforeach
 
-                            @if ($commentMedia)
-                                <div class="mt-2 relative inline-block">
-                                    <img src="{{ $commentMedia->temporaryUrl() }}"
-                                        class="h-20 rounded border border-[#2d3136] object-cover">
-                                </div>
-                            @endif
+                <div class="mt-6 flex gap-3">
+                    @if (auth()->user()->profile_photo_url)
+                        <img src="{{ auth()->user()->profile_photo_url }}" class="w-8 h-8 rounded-full object-cover">
+                    @else
+                        <div class="w-8 h-8 rounded-full bg-[#E10600] flex items-center justify-center text-white font-bold text-xs">
+                            {{ substr(auth()->user()->name, 0, 1) }}
                         </div>
-                    </div>
+                    @endif
+                    <div class="flex-1">
+                        <textarea wire:model="newComment"
+                            class="w-full bg-[#121418] border border-[#2d3136] rounded-lg text-sm text-white placeholder-gray-600 focus:ring-[#E10600] focus:border-[#E10600] resize-none p-3"
+                            placeholder="Añade un comentario..." rows="2"></textarea>
 
-                    <div class="flex justify-between items-center mt-2 pl-11">
-                        <div>
-                            <input type="file" id="commentMediaUpload-{{ $post->id }}"
-                                wire:model="commentMedia" class="hidden" accept="image/*">
-                            <label for="commentMediaUpload-{{ $post->id }}"
-                                class="cursor-pointer text-gray-500 hover:text-[#E10600] transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                    </path>
-                                </svg>
+                        @if ($commentMedia)
+                            <div class="mt-2 relative inline-block">
+                                <img src="{{ $commentMedia->temporaryUrl() }}" class="w-20 h-20 object-cover rounded-lg">
+                                <button wire:click="$set('commentMedia', null)"
+                                    class="absolute -top-2 -right-2 bg-black/50 text-white rounded-full p-1 hover:bg-black transition-colors">
+                                    <i class="fa-solid fa-xmark text-[10px]"></i>
+                                </button>
+                            </div>
+                        @endif
+
+                        <div class="flex justify-between items-center mt-3">
+                            <label class="cursor-pointer text-gray-400 hover:text-white transition-colors">
+                                <i class="fa-solid fa-image"></i>
+                                <input type="file" wire:model="commentMedia" class="hidden" accept="image/*">
                             </label>
+                            <button wire:click="addComment"
+                                class="bg-[#E10600] text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded hover:bg-[#ff0700] transition-all active:scale-95">
+                                Comentar
+                            </button>
                         </div>
-                        <button type="submit"
-                            class="bg-[#E10600] text-white font-bold text-[10px] uppercase tracking-widest px-4 py-1.5 rounded hover:bg-[#ff0700] transition-colors disabled:opacity-50"
-                            wire:loading.attr="disabled" wire:target="addComment">
-                            Responder
-                        </button>
                     </div>
-                </form>
-
-                <div class="space-y-4">
-                    @foreach ($post->comments()->latest()->get() as $comment)
-                        @livewire('comment-item', ['comment' => $comment], key('comment-' . $comment->id))
-                    @endforeach
                 </div>
             </div>
         @endif

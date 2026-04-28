@@ -17,7 +17,7 @@ class CreatePost extends Component
     public function save(){
         $this->validate([
             'content'=> 'required_without:media|string|max:500',
-            'media'=> 'nullable|image|max:10240',
+            'media'=> 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov,avi,webm|max:20480',
         ]);
 
         $path = null;

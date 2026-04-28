@@ -1,4 +1,4 @@
-<div>
+<div wire:poll.15s >
     <div class="py-12 bg-[#121418] min-h-screen font-sans">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="flex items-center gap-3 mb-8 pb-4 border-b border-[#2d3136]">

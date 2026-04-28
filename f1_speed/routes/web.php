@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\TelemetryController;
 use App\Http\Controllers\DashboardController;
 use App\Livewire\SocialFeed;
 use App\Models\Lap;
@@ -19,6 +20,7 @@ Route::middleware([
     
 
     Route::get('dashboard-f1', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('telemetry/share-lap', [DashboardController::class, 'shareLap'])->name('lap.share');
     Route::delete('telemetry/lap/{lap}', [DashboardController::class, 'destroy'])->name('lap.destroy');
     
     
@@ -27,6 +29,13 @@ Route::middleware([
     Route::get('/feed', SocialFeed::class)->name('social.feed');
     Route::get('/profile/{user?}', \App\Livewire\UserProfile::class)->name('social.profile');
     Route::get('/search', \App\Livewire\SearchGlobal::class)->name('social.search');
+    Route::post('telemetry/start-engine', [TelemetryController::class, 'startEngine']);
+    Route::get('telemetry/check-engine', [TelemetryController::class, 'checkEngine']);
+    Route::delete('session/{id}', [\App\Http\Controllers\RacingSessionController::class, 'destroy'])->name('session.destroy');
+    Route::get('/notifications/read-all', function () {
+        auth()->user()->f1Notifications()->whereNull('read_at')->update(['read_at' => now()]);
+        return back();
+    })->name('notifications.readAll');
 });
 
 

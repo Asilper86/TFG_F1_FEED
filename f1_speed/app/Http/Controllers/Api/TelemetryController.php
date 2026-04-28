@@ -8,6 +8,7 @@ use App\Models\Racing_session;
 use App\Models\Telemetry_log;
 use App\Models\User;
 use DB;
+use Exception;
 use Illuminate\Http\Request;
 
 class TelemetryController extends Controller
@@ -145,6 +146,27 @@ class TelemetryController extends Controller
 
         return response()->json(['message'=> 'Metadata updated', 'track' => $request->track_id]); 
     }
+
+    public function startEngine(){
+        $scriptPath = base_path('scripts/f1_24_real_telemetry.py');
+        $command = "start /B python \"{$scriptPath}\"";
+
+
+        try{
+            pclose(popen($command, "r"));
+            return response()->json(['message' => 'Engine Started!']);
+        } catch (Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function checkEngine(){
+        $output = shell_exec('tasklist /FI "IMAGENAME eq python.exe"');
+        $isRunning = str_contains($output, 'python.exe');
+        return response()->json(['running' => $isRunning]);
+    }
+
+
 
     public function cerrarSesion(Request $request){
         $request->validate(['session_id'=> 'required|exists:racing_sessions,id']);
