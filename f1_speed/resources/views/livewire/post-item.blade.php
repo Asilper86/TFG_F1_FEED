@@ -17,16 +17,14 @@
 
     @php
         $displayPost = $post->original_post_id ? $post->originalPost : $post;
-    @endphp
+    <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-3 p-4 sm:p-5">
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <img src="{{ $displayPost->user->profile_photo_url }}" alt="{{ $displayPost->user->name }}"
+                class="w-10 h-10 rounded-full object-cover border border-[#2d3136]">
 
-    <div class="p-5">
-        <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-3">
-                <img src="{{ $displayPost->user->profile_photo_url }}" alt="{{ $displayPost->user->name }}"
-                    class="w-10 h-10 rounded-full object-cover border border-[#2d3136]">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                <p class="text-sm font-bold text-white uppercase tracking-wide">{{ $displayPost->user->name }}</p>
 
-                <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-                    <p class="text-sm font-bold text-white uppercase tracking-wide">{{ $displayPost->user->name }}</p>
 
                     @if (auth()->id() !== $displayPost->user_id)
                         <button wire:click="toggleFollow"

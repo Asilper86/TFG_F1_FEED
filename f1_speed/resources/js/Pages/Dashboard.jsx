@@ -43,11 +43,11 @@ export default function Dashboard({ laps, activeSession }) {
     }, []);
 
 
-    const checkEngineStatus = async() => {
+    const checkEngineStatus = async () => {
         try {
             const response = await axios.get('/telemetry/check-engine');
             setEngineRunning(response.data.running);
-        } catch (error){
+        } catch (error) {
             console.error("Error checking engine:", error)
         }
     }
@@ -136,7 +136,7 @@ export default function Dashboard({ laps, activeSession }) {
                 {/* PANEL DE CONTROL DE TELEMETRÍA */}
                 <div className="bg-[#1B1D21] border border-[#2d3136] rounded-xl p-6 mb-8 flex flex-col md:flex-row items-center justify-between shadow-2xl relative overflow-hidden gap-6">
                     <div className={`absolute top-0 right-0 w-32 h-32 blur-[80px] opacity-20 ${isEngineRunning ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                    
+
                     <div className="relative z-10 flex items-center gap-6">
                         <div>
                             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 mb-1 italic">Telemetry Engine</h3>
@@ -163,20 +163,19 @@ export default function Dashboard({ laps, activeSession }) {
                     </div>
 
                     <div className="flex flex-wrap gap-4 relative z-10 w-full md:w-auto">
-                        <button 
+                        <button
                             onClick={isEngineRunning ? handleStopEngine : handleStartEngine}
                             disabled={engineLoading}
-                            className={`flex-1 md:flex-none px-8 py-3 rounded font-black uppercase italic tracking-tighter transition-all active:scale-95 flex items-center justify-center gap-2 ${
-                                isEngineRunning 
-                                ? 'bg-[#E10600]/10 text-[#E10600] border border-[#E10600]/30 hover:bg-[#E10600] hover:text-white' 
-                                : 'bg-[#E10600] text-white hover:bg-[#ff0700] shadow-[0_0_20px_rgba(225,6,0,0.3)]'
-                            }`}
+                            className={`flex-1 md:flex-none px-8 py-3 rounded font-black uppercase italic tracking-tighter transition-all active:scale-95 flex items-center justify-center gap-2 ${isEngineRunning
+                                    ? 'bg-[#E10600]/10 text-[#E10600] border border-[#E10600]/30 hover:bg-[#E10600] hover:text-white'
+                                    : 'bg-[#E10600] text-white hover:bg-[#ff0700] shadow-[0_0_20px_rgba(225,6,0,0.3)]'
+                                }`}
                         >
                             {engineLoading ? 'PROCESSING...' : isEngineRunning ? 'STOP ENGINE' : 'START ENGINE'}
                         </button>
 
                         {activeSession && (
-                            <button 
+                            <button
                                 onClick={() => handleDeleteSession(activeSession.id)}
                                 className="flex-1 md:flex-none px-6 py-3 rounded border border-[#E10600]/30 text-[#E10600] hover:bg-[#E10600] hover:text-white font-black uppercase italic tracking-tighter transition-all text-xs"
                             >

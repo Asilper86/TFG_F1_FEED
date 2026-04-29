@@ -6,21 +6,21 @@
             <!-- Banner superior -->
             <div class="h-32 bg-gradient-to-r from-[#E10600] to-black"></div>
 
-            <div class="px-8 pb-8 relative">
-                <div class="flex justify-between items-end -mt-12 mb-4">
+            <div class="px-4 sm:px-8 pb-8 relative">
+                <div class="flex justify-between items-end -mt-10 sm:-mt-12 mb-4">
                     <img src="{{ $profileUser->profile_photo_url }}"
-                        class="w-24 h-24 rounded-full border-4 border-[#1B1D21] object-cover bg-[#1B1D21]">
+                        class="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-[#1B1D21] object-cover bg-[#1B1D21]">
 
                     @if (auth()->id() !== $profileUser->id)
                         <button wire:click="toggleFollow"
-                            class="px-6 py-2 rounded font-bold text-xs uppercase tracking-widest transition-colors {{ $isFollowing ? 'border border-[#2d3136] bg-transparent text-white hover:border-gray-500' : 'bg-[#E10600] text-white hover:bg-[#ff0700]' }}">
+                            class="px-4 sm:px-6 py-2 rounded font-bold text-[10px] sm:text-xs uppercase tracking-widest transition-colors {{ $isFollowing ? 'border border-[#2d3136] bg-transparent text-white hover:border-gray-500' : 'bg-[#E10600] text-white hover:bg-[#ff0700]' }}">
                             {{ $isFollowing ? 'Siguiendo' : 'Seguir' }}
                         </button>
                     @endif
                 </div>
 
-                <h1 class="text-3xl font-black uppercase tracking-wide">{{ $profileUser->name }}</h1>
-                <p class="text-gray-400 text-sm mb-6">{{ $profileUser->email }}</p>
+                <h1 class="text-2xl sm:text-3xl font-black uppercase tracking-wide">{{ $profileUser->name }}</h1>
+                <p class="text-gray-400 text-xs sm:text-sm mb-6">{{ $profileUser->email }}</p>
                 @if (auth()->id() === $profileUser->id)
                     <button wire:click="openEditModal"
                         class="px-6 py-2 rounded font-bold text-xs uppercase tracking-widest border border-[#2d3136] text-white hover:bg-white hover:text-black transition-all">
