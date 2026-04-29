@@ -13,7 +13,11 @@ from dotenv import load_dotenv
 env_path = Path(__file__).resolve().parent.parent / '.env'
 load_dotenv(dotenv_path=env_path)
 IP_LARAVEL = os.getenv("LARAVEL_IP", "127.0.0.1")
-API_BASE_URL = f"http://{IP_LARAVEL}:8000/api"
+if os.name != 'nt': 
+    IP_LARAVEL = "127.0.0.1"
+
+API_BASE_URL = f"http://{IP_LARAVEL}/api"
+print(f"[DEBUG] API URL: {API_BASE_URL}")
 UDP_IP = "0.0.0.0" 
 UDP_PORT = 20777
 
