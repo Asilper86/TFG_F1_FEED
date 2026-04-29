@@ -148,7 +148,17 @@ class TelemetryController extends Controller
     }
 
     public function stopEngine(){
-        shell_exec('taskkill /F /IM python.exe');
+        if (PHP_OS_FAMILY === 'Windows') {
+            shell_exec('taskkill /F /IM python.exe');
+        } else {
+            $pidFile = base_path('scripts/telemetry.pid');
+            if (file_exists($pidFile)) {
+                $pid = trim(file_get_contents($pidFile));
+                shell_exec("kill -9 $pid");
+            }
+            shell_exec("pkill -f f1_24_real_telemetry.py");
+        }
+        
         @unlink(base_path('scripts/telemetry.pid'));
         cache()->forget('telemetry_engine_running');
         return response()->json(['message' => 'Engine Stopped']);
@@ -156,15 +166,17 @@ class TelemetryController extends Controller
 
     public function startEngine(){
         $scriptPath = base_path('scripts/f1_24_real_telemetry.py');
-        $python = 'C:\Users\adria\AppData\Local\Python\bin\python.exe';
-        $command = "start /B \"TelemetryEngine\" \"$python\" \"$scriptPath\"";
-
-        try {
+        
+        if (PHP_OS_FAMILY === 'Windows') {
+            $python = 'python'; 
+            $command = "start /B \"TelemetryEngine\" \"$python\" \"$scriptPath\"";
             pclose(popen($command, "r"));
-            return response()->json(['message' => 'Engine Started!']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+        } else {
+            $command = "nohup python3 \"$scriptPath\" > /dev/null 2>&1 &";
+            shell_exec($command);
         }
+
+        return response()->json(['message' => 'Engine Started!']);
     }
 
     public function checkEngine(){
@@ -175,8 +187,13 @@ class TelemetryController extends Controller
             $pid = trim(file_get_contents($pidFile));
             if (!$pid) return ['running' => false];
 
-            $output = shell_exec("tasklist /FI \"PID eq $pid\" /NH");
-            $isRunning = str_contains($output, (string)$pid);
+            if (PHP_OS_FAMILY === 'Windows') {
+                $output = shell_exec("tasklist /FI \"PID eq $pid\" /NH");
+                $isRunning = str_contains($output, (string)$pid);
+            } else {
+                $output = shell_exec("ps -p $pid");
+                $isRunning = str_contains($output, (string)$pid);
+            }
 
             if (!$isRunning) {
                 @unlink($pidFile);
