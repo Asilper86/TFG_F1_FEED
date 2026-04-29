@@ -15,18 +15,16 @@ Esta documentación detalla los pasos para desplegar el proyecto en una instanci
 Conéctate por SSH y ejecuta:
 
 ```bash
-# Actualizar sistema
+# 1. Actualizar sistema e instalar PHP (Ubuntu 26.04+ ya incluye PHP moderno)
 sudo apt update && sudo apt upgrade -y
+sudo apt install -y php-fpm php-mysql php-xml php-curl php-mbstring php-zip php-gd php-intl
 
-# Instalar PHP 8.2 y extensiones necesarias
-sudo apt install -y php8.2-fpm php8.2-mysql php8.2-xml php8.2-curl php8.2-mbstring php8.2-zip php8.2-gd php8.2-intl
-
-# Instalar Nginx y MySQL
+# 2. Instalar Nginx y MySQL
 sudo apt install -y nginx mysql-server
 
 # Instalar Node.js (v18+) y NPM
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt install -y node-js
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt install -y nodejs
 
 # Instalar Composer
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
@@ -38,9 +36,9 @@ sudo mv composer.phar /usr/local/bin/composer
 ```bash
 cd /var/www
 # Clona tu repositorio (usa SSH o Personal Access Token)
-sudo git clone https://github.com/TU_USUARIO/TU_REPOSITORIO.git f1-speed
-sudo chown -R $USER:$USER f1-speed
-cd f1-speed
+sudo git clone https://github.com/TU_USUARIO/TU_REPOSITORIO.git f1_speed
+sudo chown -R $USER:$USER f1_speed
+cd f1_speed
 
 # Instalar dependencias PHP
 composer install --no-dev --optimize-autoloader
@@ -74,7 +72,7 @@ QUEUE_CONNECTION=database
 sudo mysql -u root
 # Dentro de MySQL:
 CREATE DATABASE f1_speed;
-CREATE USER 'f1_user'@'localhost' IDENTIFIED BY 'tu_password_segura';
+CREATE USER 'f1_user'@'localhost' IDENTIFIED BY '861221AL_f1speed';
 GRANT ALL PRIVILEGES ON f1_speed.* TO 'f1_user'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
@@ -98,7 +96,7 @@ Crea `/etc/nginx/sites-available/f1-speed`:
 server {
     listen 80;
     server_name tu-dominio.com;
-    root /var/www/f1-speed/public;
+    root /var/www/TFG_F1_FEED/f1_speed/public;
 
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-Content-Type-Options "nosniff";
@@ -112,7 +110,7 @@ server {
     }
 
     location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        fastcgi_pass unix:/var/run/php/php8.5-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
     }
@@ -130,7 +128,13 @@ sudo systemctl restart nginx
 ```
 
 ## 7. Script de Telemetría (Python)
-Para que el script de telemetría no se detenga, usa **Supervisor**:
+Para que el script funcione, instala las librerías necesarias mediante el gestor de paquetes del sistema (en versiones nuevas de Ubuntu no se permite usar `pip3` globalmente):
+```bash
+sudo apt update
+sudo apt install -y python3-requests python3-dotenv
+```
+
+Para que el script no se detenga, usa **Supervisor**:
 ```bash
 sudo apt install supervisor
 ```
@@ -138,12 +142,12 @@ Crea `/etc/supervisor/conf.d/f1-telemetry.conf`:
 ```ini
 [program:f1-telemetry]
 process_name=%(program_name)s
-command=python3 /var/www/f1-speed/scripts/f1_24_real_telemetry.py
+command=python3 /var/www/TFG_F1_FEED/f1_speed/scripts/f1_24_real_telemetry.py
 autostart=true
 autorestart=true
 user=www-data
 redirect_stderr=true
-stdout_logfile=/var/www/f1-speed/storage/logs/telemetry.log
+stdout_logfile=/var/www/TFG_F1_FEED/f1_speed/storage/logs/telemetry.log
 ```
 Activa el proceso:
 ```bash
