@@ -147,23 +147,43 @@ class TelemetryController extends Controller
         return response()->json(['message'=> 'Metadata updated', 'track' => $request->track_id]); 
     }
 
+    public function stopEngine(){
+        shell_exec('taskkill /F /IM python.exe');
+        @unlink(base_path('scripts/telemetry.pid'));
+        cache()->forget('telemetry_engine_running');
+        return response()->json(['message' => 'Engine Stopped']);
+    }
+
     public function startEngine(){
         $scriptPath = base_path('scripts/f1_24_real_telemetry.py');
-        $command = "start /B python \"{$scriptPath}\"";
+        $python = 'C:\Users\adria\AppData\Local\Python\bin\python.exe';
+        $command = "start /B \"TelemetryEngine\" \"$python\" \"$scriptPath\"";
 
-
-        try{
+        try {
             pclose(popen($command, "r"));
             return response()->json(['message' => 'Engine Started!']);
-        } catch (Exception $e){
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
     public function checkEngine(){
-        $output = shell_exec('tasklist /FI "IMAGENAME eq python.exe"');
-        $isRunning = str_contains($output, 'python.exe');
-        return response()->json(['running' => $isRunning]);
+        return cache()->remember('telemetry_engine_running', 1, function() {
+            $pidFile = base_path('scripts/telemetry.pid');
+            if (!file_exists($pidFile)) return ['running' => false];
+            
+            $pid = trim(file_get_contents($pidFile));
+            if (!$pid) return ['running' => false];
+
+            $output = shell_exec("tasklist /FI \"PID eq $pid\" /NH");
+            $isRunning = str_contains($output, (string)$pid);
+
+            if (!$isRunning) {
+                @unlink($pidFile);
+            }
+
+            return ['running' => $isRunning];
+        });
     }
 
 

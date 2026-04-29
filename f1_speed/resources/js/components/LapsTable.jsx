@@ -5,32 +5,12 @@ import { formatLapTime } from '../Pages/Dashboard';
 export default function LapsTable({ laps, onSelectLap, selectedId }) {
     const handleDelete = (e, lapId) => {
         e.stopPropagation();
-        if (confirm("¿Eliminar los datos de esta vuelta?")) {
-            router.delete(`/telemetry/lap/${lapId}`);
-        }
+        router.delete(`/telemetry/lap/${lapId}`);
     }
 
     const handleShare = (e, lap) => {
         e.stopPropagation();
-
-        // Nombres para el mensaje sugerido
-        const tracks = { '1': 'Monza', '2': 'Spa', '3': 'Silverstone', '4': 'Monaco', '5': 'Barcelona' };
-        const cars = { '1': 'Ferrari', '2': 'Red Bull', '3': 'Mercedes', '4': 'McLaren', '5': 'Aston Martin' };
-
-        const trackName = tracks[lap.session.track_id] || 'Circuito';
-        const carName = cars[lap.session.car_id] || 'Coche';
-        const time = formatLapTime(lap.lap_time);
-
-        const defaultMsg = `¡Acabo de volar en ${trackName} con el ${carName}! Tiempo: ${time} #F1Speed`;
-
-        const userMsg = prompt("Escribe tu mensaje para el muro:", defaultMsg);
-
-        if (userMsg) {
-            router.post('/telemetry/share-lap', {
-                lap_id: lap.id,
-                content: userMsg
-            });
-        }
+        window.dispatchEvent(new CustomEvent('open-share-modal', { detail: { lap } }));
     }
 
     let mejorS1 = 999, mejorS2 = 999, mejorS3 = 999;

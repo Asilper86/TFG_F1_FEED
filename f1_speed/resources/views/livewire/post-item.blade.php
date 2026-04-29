@@ -1,5 +1,5 @@
 <div
-    class="bg-[#1B1D21] border border-[#2d3136] rounded-md mb-4 shadow-sm transition-all hover:border-[#3FA9F5]/30 overflow-hidden">
+    class="relative bg-[#1B1D21] border border-[#2d3136] rounded-md mb-4 shadow-sm transition-all hover:border-[#3FA9F5]/30 overflow-hidden">
     @if ($post->original_post_id)
         <div class="px-5 pt-3 flex items-center gap-2 text-gray-400">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -42,10 +42,13 @@
                     {{ $displayPost->created_at->diffForHumans() }}
                 </p>
 
-                @if (auth()->id() === $post->user_id)
-                    <button wire:click="deletePost"
-                        wire:confirm="¿Estás seguro de que quieres eliminar este post? Esta acción no se puede deshacer."
-                        class="text-gray-500 hover:text-[#E10600] transition-colors" title="Eliminar Post">
+                @if ((int) auth()->id() === (int) $post->user_id)
+                    <button
+                        type="button"
+                        wire:click="deletePost"
+                        wire:confirm="¿Seguro que quieres borrar este post?"
+                        class="text-gray-500 hover:text-[#E10600] transition-colors p-2"
+                        title="Eliminar Post">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
@@ -140,7 +143,7 @@
             </button>
         </div>
 
-¡        @if ($showComments)
+        @if ($showComments)
             @php $displayPost = $post->original_post_id ? $post->originalPost : $post; @endphp
             <div class="mt-6 space-y-4 border-t border-[#2d3136] pt-6">
                 @foreach ($displayPost->comments as $comment)

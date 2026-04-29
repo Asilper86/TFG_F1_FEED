@@ -5,6 +5,7 @@ import Navbar from '../Components/NavBar';
 import LapsTable from '../Components/LapsTable';
 import GraficoTelemetria from '../Components/GraficoTelemetria';
 import MapaCircuito from '../Components/MapaCircuito';
+import ShareModal from '../Components/ShareModal';
 import axios from 'axios';
 import { TRACKS, TEAMS } from './SessionSetup';
 
@@ -37,7 +38,7 @@ export default function Dashboard({ laps, activeSession }) {
 
     useEffect(() => {
         checkEngineStatus();
-        const interval = setInterval(checkEngineStatus, 1000);
+        const interval = setInterval(checkEngineStatus, 5000);
         return () => clearInterval(interval);
     }, []);
 
@@ -56,9 +57,20 @@ export default function Dashboard({ laps, activeSession }) {
         try {
             await axios.post('/telemetry/start-engine');
             setEngineRunning(true);
-            alert("¡Motor arrancado! El script de telemetría está activo.");
         } catch (error) {
-            alert("Error al arrancar el motor. Revisa la consola.");
+            alert("Error al arrancar el motor.");
+        } finally {
+            setEngineLoading(false);
+        }
+    };
+
+    const handleStopEngine = async () => {
+        setEngineLoading(true);
+        try {
+            await axios.post('/telemetry/stop-engine');
+            setEngineRunning(false);
+        } catch (error) {
+            alert("Error al apagar el motor.");
         } finally {
             setEngineLoading(false);
         }
@@ -73,7 +85,7 @@ export default function Dashboard({ laps, activeSession }) {
                 preserveState: true,
                 onFinish: () => setTimeout(() => setEncendido(false), 500)
             });
-        }, 2000);
+        }, 5000);
 
         return () => clearInterval(radar);
 
@@ -102,10 +114,15 @@ export default function Dashboard({ laps, activeSession }) {
         gear: telemetryData.gear[index]
     })).filter(d => d.distance >= 0) || [];
 
+    const cambiarMetricas = (metrica) => {
+        setVisibleMetrics(prev => ({
+            ...prev,
+            [metrica]: !prev[metrica]
+        }));
+    };
+
     const handleDeleteSession = (id) => {
-        if (confirm('¿Estás seguro de que quieres eliminar esta sesión y todos sus datos?')) {
-            router.delete(`/session/${id}`);
-        }
+        router.delete(`/session/${id}`);
     };
 
     return (
@@ -147,15 +164,15 @@ export default function Dashboard({ laps, activeSession }) {
 
                     <div className="flex flex-wrap gap-4 relative z-10 w-full md:w-auto">
                         <button 
-                            onClick={handleStartEngine}
-                            disabled={isEngineRunning || engineLoading}
+                            onClick={isEngineRunning ? handleStopEngine : handleStartEngine}
+                            disabled={engineLoading}
                             className={`flex-1 md:flex-none px-8 py-3 rounded font-black uppercase italic tracking-tighter transition-all active:scale-95 flex items-center justify-center gap-2 ${
                                 isEngineRunning 
-                                ? 'bg-[#121418] text-gray-600 border border-[#2d3136] cursor-default' 
+                                ? 'bg-[#E10600]/10 text-[#E10600] border border-[#E10600]/30 hover:bg-[#E10600] hover:text-white' 
                                 : 'bg-[#E10600] text-white hover:bg-[#ff0700] shadow-[0_0_20px_rgba(225,6,0,0.3)]'
                             }`}
                         >
-                            {engineLoading ? 'IGNITING...' : isEngineRunning ? 'READY' : 'START ENGINE'}
+                            {engineLoading ? 'PROCESSING...' : isEngineRunning ? 'STOP ENGINE' : 'START ENGINE'}
                         </button>
 
                         {activeSession && (
@@ -257,6 +274,7 @@ export default function Dashboard({ laps, activeSession }) {
                     </div>
                 </div>
             </main>
+            <ShareModal />
         </div>
     );
 }

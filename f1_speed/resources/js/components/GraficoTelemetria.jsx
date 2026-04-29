@@ -87,7 +87,7 @@ export default function GraficoTelemetria({ data, visibleMetrics = { speed: true
                             yAxisId="right"  
                             type="stepAfter" 
                             name="GEAR"
-                            dataKey={(d) => d.gear * 10}
+                            dataKey="gear"
                             stroke="#eab308"
                             dot={false}
                             strokeWidth={2}

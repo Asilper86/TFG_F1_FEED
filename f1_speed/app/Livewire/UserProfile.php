@@ -10,7 +10,6 @@ use Livewire\Component;
 class UserProfile extends Component
 {
     public User $profileUser;
-    public $posts;
     public $followersCount = 0;
     public $followingCount = 0;
     public $isFollowing = false;
@@ -62,15 +61,6 @@ class UserProfile extends Component
         if(auth()->id() !== $this->profileUser->id){
             $this->isFollowing = auth()->user()->following()->where('followed_id', $this->profileUser->id)->exists();
         }
-
-        $this->loadPosts();
-    }
-
-    public function loadPosts(){
-        $this->posts = Social_post::with(['user', 'likes', 'lap.session', 'comments.user'])
-            ->where('user_id', $this->profileUser->id)
-            ->latest()
-            ->get();
     }
 
     public function toggleFollow(){
@@ -82,25 +72,19 @@ class UserProfile extends Component
         }
     }
 
-    public function deletePost($postId)
-    {
-        $post = Social_post::find($postId);
-        if ($post && auth()->id() === $post->user_id) {
-            if ($post->media_path) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($post->media_path);
-            }
-            $post->delete();
-            $this->loadPosts(); 
-        }
-    }
-
     #[On('post-deleted')]
     public function refreshProfile()
     {
-        $this->loadPosts(); 
+        // El render se encargará de refrescar los posts
     }
+
     public function render()
     {
-        return view('livewire.user-profile')->layout('layouts.app');
+        $posts = Social_post::with(['user', 'likes', 'lap.session', 'comments.user'])
+            ->where('user_id', $this->profileUser->id)
+            ->latest()
+            ->get();
+
+        return view('livewire.user-profile', compact('posts'))->layout('layouts.app');
     }
 }

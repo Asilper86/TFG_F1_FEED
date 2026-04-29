@@ -31,7 +31,7 @@ class SocialFeed extends Component
     #[On(['post-created', 'follow-updated', 'post-deleted'])]
     public function render()
     {
-        $query = Social_post::whereNull('original_post_id')->with(['user', 'likes', 'originalPost'])->latest();
+        $query = Social_post::whereNull('original_post_id')->with(['user', 'likes', 'originalPost', 'lap.session'])->latest();
         if ($this->feedType === 'following') {
             $followedIds = auth()->user()->following()->pluck('users.id');
             $followedIds->push(auth()->id()); 

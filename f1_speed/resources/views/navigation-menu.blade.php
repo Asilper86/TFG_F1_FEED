@@ -40,14 +40,14 @@
                 </div>
 
                 <div class="relative" x-data="{ notifOpen: false }">
-                    <button @click="notifOpen = !notifOpen" class="relative text-gray-400 hover:text-white transition-colors p-1">
+                    <button @click.stop="notifOpen = !notifOpen" class="relative text-gray-400 hover:text-white transition-colors p-1">
                         <i class="fa-solid fa-bell text-lg"></i>
                         @if ($unread > 0)
                             <span class="absolute -top-1 -right-1 w-4 h-4 bg-[#E10600] rounded-full text-[9px] font-black flex items-center justify-center text-white">{{ $unread }}</span>
                         @endif
                     </button>
 
-                    <div x-show="notifOpen" @click.outside="notifOpen = false" x-transition class="absolute right-0 mt-3 w-80 bg-[#1B1D21] border border-[#2d3136] rounded-xl shadow-2xl z-50 overflow-hidden">
+                    <div x-show="notifOpen" @click.outside="notifOpen = false" x-transition class="absolute right-0 mt-3 w-80 bg-[#1B1D21] border border-[#2d3136] rounded-xl shadow-2xl z-50 overflow-hidden" x-cloak>
                         <div class="px-4 py-3 border-b border-[#2d3136] flex justify-between items-center">
                             <span class="text-[10px] font-black uppercase tracking-widest text-white">Notificaciones</span>
                             <a href="{{ route('notifications.readAll') }}" class="text-[9px] text-gray-500 hover:text-white uppercase tracking-widest">Marcar leído</a>

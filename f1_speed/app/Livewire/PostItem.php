@@ -22,50 +22,78 @@ class PostItem extends Component
     public $newComment = '';
     public $commentsCount = 0;
     public $hasReposted = false;
-    
-    protected $targetPost;
 
-    public function boot()
+    // ID del post "real" (si es repost, el original; si no, el propio)
+    public $targetPostId;
+
+    private function getTarget(): Social_post
     {
-        $this->targetPost = $this->post->original_post_id ? $this->post->originalPost : $this->post;
+        if ($this->post->original_post_id) {
+            return $this->post->originalPost ?? $this->post;
+        }
+        return $this->post;
     }
 
     public function mount(Social_post $post)
     {
         $this->post = $post;
-        $this->targetPost = $post->original_post_id ? $post->originalPost : $post;
+        $target = $this->getTarget();
+        $this->targetPostId = $target->id;
 
-        $this->hasLiked = $this->targetPost->likes->contains('user_id', auth()->id());
-        $this->likesCount = $this->targetPost->likes->count();
-        $this->commentsCount = $this->targetPost->comments()->count();
+        $this->hasLiked = $target->likes->contains('user_id', auth()->id());
+        $this->likesCount = $target->likes->count();
+        $this->commentsCount = $target->comments()->count();
 
         $this->hasReposted = Social_post::where('user_id', auth()->id())
-            ->where('original_post_id', $this->targetPost->id)
+            ->where('original_post_id', $target->id)
             ->exists();
 
-        $this->isFollowing = auth()->user()->following()->where('followed_id', $this->targetPost->user_id)->exists();
+        $this->isFollowing = auth()->user()->following()
+            ->where('followed_id', $target->user_id)
+            ->exists();
+    }
+
+    public function deletePost()
+    {
+        // Recargamos el post fresco de la BD para evitar problemas de estado
+        $post = Social_post::find($this->post->id);
+
+        if (!$post) return;
+
+        // Comprobamos que el usuario autenticado es el dueño
+        if ((int) auth()->id() !== (int) $post->user_id) {
+            return;
+        }
+
+        if ($post->media_path) {
+            Storage::disk('public')->delete($post->media_path);
+        }
+
+        $post->delete();
+        $this->dispatch('post-deleted');
     }
 
     public function toggleLike()
     {
+        $target = Social_post::findOrFail($this->targetPostId);
         $user_id = auth()->id();
-        $exists = $this->targetPost->likes()->where('user_id', $user_id)->first();
-        
+        $exists = $target->likes()->where('user_id', $user_id)->first();
+
         if ($exists) {
             $exists->delete();
             $this->hasLiked = false;
             $this->likesCount--;
         } else {
-            $this->targetPost->likes()->create(['user_id' => $user_id]);
+            $target->likes()->create(['user_id' => $user_id]);
             $this->hasLiked = true;
             $this->likesCount++;
-            
-            if ($user_id !== $this->targetPost->user_id) {
+
+            if ($user_id !== $target->user_id) {
                 F1Notification::create([
-                    'user_id' => $this->targetPost->user_id,
+                    'user_id' => $target->user_id,
                     'actor_id' => $user_id,
                     'type' => 'like',
-                    'notifiable_id' => $this->targetPost->id,
+                    'notifiable_id' => $target->id,
                     'notifiable_type' => Social_post::class,
                 ]);
             }
@@ -74,13 +102,16 @@ class PostItem extends Component
 
     public function toggleFollow()
     {
-        $targetUserId = $this->targetPost->user_id;
+        $target = Social_post::findOrFail($this->targetPostId);
+        $targetUserId = $target->user_id;
+
         if (auth()->id() !== $targetUserId) {
             $wasFollowing = $this->isFollowing;
             auth()->user()->following()->toggle($targetUserId);
-            $this->isFollowing = ! $this->isFollowing;
+            $this->isFollowing = !$this->isFollowing;
             $this->dispatch('follow-updated');
-            if (! $wasFollowing) {
+
+            if (!$wasFollowing) {
                 F1Notification::create([
                     'user_id' => $targetUserId,
                     'actor_id' => auth()->id(),
@@ -92,7 +123,7 @@ class PostItem extends Component
 
     public function toggleComments()
     {
-        $this->showComments = ! $this->showComments;
+        $this->showComments = !$this->showComments;
     }
 
     public function addComment()
@@ -102,12 +133,14 @@ class PostItem extends Component
             'commentMedia' => 'nullable|image|max:10240',
         ]);
 
+        $target = Social_post::findOrFail($this->targetPostId);
+
         $path = null;
         if ($this->commentMedia) {
             $path = $this->commentMedia->store('social_comments', 'public');
         }
-        
-        $this->targetPost->comments()->create([
+
+        $target->comments()->create([
             'user_id' => auth()->id(),
             'body' => $this->newComment,
             'media_path' => $path,
@@ -115,14 +148,14 @@ class PostItem extends Component
 
         $this->reset(['newComment', 'commentMedia']);
         $this->commentsCount++;
-        $this->targetPost->refresh();
+        $target->refresh();
 
-        if (auth()->id() !== $this->targetPost->user_id) {
+        if (auth()->id() !== $target->user_id) {
             F1Notification::create([
-                'user_id'         => $this->targetPost->user_id,
-                'actor_id'        => auth()->id(),
-                'type'            => 'comment',
-                'notifiable_id'   => $this->targetPost->id,
+                'user_id' => $target->user_id,
+                'actor_id' => auth()->id(),
+                'type' => 'comment',
+                'notifiable_id' => $target->id,
                 'notifiable_type' => Social_post::class,
             ]);
         }
@@ -130,57 +163,54 @@ class PostItem extends Component
 
     public function deleteComment($commentId)
     {
-        $comment = $this->targetPost->comments()->find($commentId);
-        if ($comment && auth()->id() === $comment->user_id) {
+        $target = Social_post::findOrFail($this->targetPostId);
+        $comment = $target->comments()->find($commentId);
+
+        if ($comment && (int) auth()->id() === (int) $comment->user_id) {
             if ($comment->media_path) {
                 Storage::disk('public')->delete($comment->media_path);
             }
             $comment->delete();
             $this->commentsCount--;
-            $this->targetPost->refresh();
+            $target->refresh();
         }
     }
 
     #[On('follow-updated')]
     public function updateFollowState()
     {
-        $this->isFollowing = auth()->user()->following()->where('followed_id', $this->targetPost->user_id)->exists();
-    }
-
-    public function deletePost()
-    {
-        if (auth()->id() === $this->post->user_id) {
-            if ($this->post->media_path) {
-                Storage::disk('public')->delete($this->post->media_path);
-            }
-
-            $this->post->delete();
-            $this->dispatch('post-deleted');
+        $target = Social_post::find($this->targetPostId);
+        if ($target) {
+            $this->isFollowing = auth()->user()->following()
+                ->where('followed_id', $target->user_id)
+                ->exists();
         }
     }
 
     public function repost()
     {
+        $target = Social_post::findOrFail($this->targetPostId);
+
         $existe = Social_post::where('user_id', auth()->id())
-            ->where('original_post_id', $this->targetPost->id)
+            ->where('original_post_id', $target->id)
             ->first();
-            
+
         if ($existe) {
             $existe->delete();
             $this->hasReposted = false;
         } else {
             Social_post::create([
                 'user_id' => auth()->id(),
-                'original_post_id' => $this->targetPost->id,
+                'original_post_id' => $target->id,
             ]);
             $this->hasReposted = true;
-            
-            if (auth()->id() !== $this->targetPost->user_id) {
+
+            if (auth()->id() !== $target->user_id) {
                 F1Notification::create([
-                    'user_id' => $this->targetPost->user_id,
+                    'user_id' => $target->user_id,
                     'actor_id' => auth()->id(),
                     'type' => 'repost',
-                    'notifiable_id' => $this->targetPost->id,
+                    'notifiable_id' => $target->id,
                     'notifiable_type' => Social_post::class,
                 ]);
             }

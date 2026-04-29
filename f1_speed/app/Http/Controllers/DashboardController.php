@@ -46,13 +46,22 @@ class DashboardController extends Controller
             abort(403);
         }
 
-        Social_post::create([
+        $post = Social_post::create([
             'user_id' => auth()->id(),
             'content' => $request->content, 
             'lap_id' => $lap->id,
         ]);
 
-        return redirect()->back()->with('message', '¡Post publicado!');
+        // Extraer y guardar hashtags
+        preg_match_all('/#(\w+)/', $request->content, $matches);
+        if (!empty($matches[1])) {
+            foreach ($matches[1] as $tagName) {
+                $hashtag = \App\Models\Hashtag::firstOrCreate(['name' => strtolower($tagName)]);
+                $post->hashtags()->attach($hashtag->id);
+            }
+        }
+
+        return redirect()->route('social.feed')->with('message', '¡Post publicado!');
     }
 
     /**

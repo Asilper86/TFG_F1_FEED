@@ -30,6 +30,7 @@ Route::middleware([
     Route::get('/profile/{user?}', \App\Livewire\UserProfile::class)->name('social.profile');
     Route::get('/search', \App\Livewire\SearchGlobal::class)->name('social.search');
     Route::post('telemetry/start-engine', [TelemetryController::class, 'startEngine']);
+    Route::post('telemetry/stop-engine', [TelemetryController::class, 'stopEngine']);
     Route::get('telemetry/check-engine', [TelemetryController::class, 'checkEngine']);
     Route::delete('session/{id}', [\App\Http\Controllers\RacingSessionController::class, 'destroy'])->name('session.destroy');
     Route::get('/notifications/read-all', function () {
