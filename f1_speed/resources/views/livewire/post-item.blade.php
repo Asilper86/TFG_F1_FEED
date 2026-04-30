@@ -17,6 +17,8 @@
 
     @php
         $displayPost = $post->original_post_id ? $post->originalPost : $post;
+    @endphp
+
     <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-3 p-4 sm:p-5">
         <div class="flex items-center gap-3 w-full sm:w-auto">
             <img src="{{ $displayPost->user->profile_photo_url }}" alt="{{ $displayPost->user->name }}"
