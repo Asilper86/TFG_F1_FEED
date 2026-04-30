@@ -126,7 +126,7 @@ export default function Dashboard({ laps, activeSession }) {
     };
 
     return (
-        <div className="min-h-screen bg-[#121418] text-white font-sans selection:bg-[#E10600]/30">
+        <div className="min-h-screen bg-[#121418] text-white font-sans selection:bg-[#E10600]/30 overflow-x-hidden max-w-[100vw]">
             <Head title="Telemetry Dashboard" />
 
             <Navbar user={auth.user} />
@@ -137,7 +137,7 @@ export default function Dashboard({ laps, activeSession }) {
                 <div className="bg-[#1B1D21] border border-[#2d3136] rounded-xl p-6 mb-8 flex flex-col md:flex-row items-center justify-between shadow-2xl relative overflow-hidden gap-6">
                     <div className={`absolute top-0 right-0 w-32 h-32 blur-[80px] opacity-20 ${isEngineRunning ? 'bg-green-500' : 'bg-red-500'}`}></div>
 
-                    <div className="relative z-10 flex items-center gap-6">
+                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-6 text-center md:text-left">
                         <div>
                             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 mb-1 italic">Telemetry Engine</h3>
                             <div className="flex items-center gap-3">
@@ -185,9 +185,9 @@ export default function Dashboard({ laps, activeSession }) {
                     </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-4 border-b border-[#2d3136]">
-                    <div className="flex items-center gap-6">
-                        <h1 className="text-[22px] font-bold tracking-wide text-white uppercase flex items-center gap-3">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-4 border-b border-[#2d3136] gap-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full">
+                        <h1 className="text-[20px] md:text-[22px] font-bold tracking-wide text-white uppercase flex flex-wrap items-center gap-3">
                             <span className="text-[#E10600] text-3xl font-black">/</span> Analisis de Sesiones
                             {encendido ? (
                                 <span className="text-[9px] uppercase tracking-widest text-[#10b981] ml-4 flex items-center gap-1.5 font-mono">
