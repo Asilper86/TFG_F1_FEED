@@ -7,20 +7,31 @@
             <div class="h-32 bg-gradient-to-r from-[#E10600] to-black"></div>
 
             <div class="px-4 sm:px-8 pb-8 relative">
-                <div class="flex justify-between items-end -mt-10 sm:-mt-12 mb-4">
+                <div class="flex flex-col sm:flex-row justify-between items-center sm:items-end -mt-10 sm:-mt-12 mb-6 gap-4">
                     <img src="{{ $profileUser->profile_photo_url }}"
-                        class="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-[#1B1D21] object-cover bg-[#1B1D21]">
+                        class="w-24 h-24 rounded-full border-4 border-[#1B1D21] object-cover bg-[#1B1D21] shadow-2xl">
 
-                    @if (auth()->id() !== $profileUser->id)
-                        <button wire:click="toggleFollow"
-                            class="px-4 sm:px-6 py-2 rounded font-bold text-[10px] sm:text-xs uppercase tracking-widest transition-colors {{ $isFollowing ? 'border border-[#2d3136] bg-transparent text-white hover:border-gray-500' : 'bg-[#E10600] text-white hover:bg-[#ff0700]' }}">
-                            {{ $isFollowing ? 'Siguiendo' : 'Seguir' }}
-                        </button>
-                    @endif
+                    <div class="flex items-center gap-3">
+                        @if (auth()->id() !== $profileUser->id)
+                            <button wire:click="toggleFollow"
+                                class="px-6 py-2.5 rounded font-black text-[10px] uppercase tracking-[0.2em] transition-all {{ $isFollowing ? 'bg-[#2d3136] text-white hover:bg-gray-700' : 'bg-[#E10600] text-white hover:bg-[#ff0700] shadow-[0_0_15px_rgba(225,6,0,0.3)]' }}">
+                                {{ $isFollowing ? 'Siguiendo' : 'Seguir Piloto' }}
+                            </button>
+                        @endif
+                        
+                        @if (auth()->id() === $profileUser->id)
+                            <button wire:click="openEditModal"
+                                class="px-6 py-2.5 rounded font-black text-[10px] uppercase tracking-[0.2em] border border-[#2d3136] text-white hover:bg-white hover:text-black transition-all">
+                                Editar Perfil
+                            </button>
+                        @endif
+                    </div>
                 </div>
 
-                <h1 class="text-2xl sm:text-3xl font-black uppercase tracking-wide">{{ $profileUser->name }}</h1>
-                <p class="text-gray-400 text-xs sm:text-sm mb-6">{{ $profileUser->email }}</p>
+                <div class="text-center sm:text-left">
+                    <h1 class="text-3xl sm:text-4xl font-black uppercase tracking-tighter italic">{{ $profileUser->name }}</h1>
+                    <p class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mt-1">{{ $profileUser->email }}</p>
+                </div>
                 @if (auth()->id() === $profileUser->id)
                     <button wire:click="openEditModal"
                         class="px-6 py-2 rounded font-bold text-xs uppercase tracking-widest border border-[#2d3136] text-white hover:bg-white hover:text-black transition-all">

@@ -11,24 +11,20 @@
                 @livewire('create-post')
             </div>
 
-            <div class="bg-[#23262A] border border-[#2d3136] overflow-hidden rounded p-4 sm:p-6 text-white shadow-xl">
-                <div class="flex items-center gap-6 mb-6 border-b border-[#2d3136] pb-3">
+            <div class="bg-[#23262A] border border-[#2d3136] overflow-hidden rounded shadow-xl">
+                <div class="flex items-center gap-6 p-4 sm:p-6 border-b border-[#2d3136] bg-[#1B1D21]">
                     <button wire:click="setFeedType('global')"
-                        class="text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors {{ $feedType === 'global' ? 'text-white' : 'text-gray-500 hover:text-gray-300' }}">
-                        @if ($feedType === 'global')
-                            <span class="w-2 h-2 bg-[#E10600] rounded-full"></span>
-                        @endif
-                        Global
+                        class="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] flex items-center gap-2 transition-all {{ $feedType === 'global' ? 'text-[#E10600]' : 'text-gray-400 hover:text-white' }}">
+                        GLOBAL
                     </button>
 
                     <button wire:click="setFeedType('following')"
-                        class="text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors {{ $feedType === 'following' ? 'text-white' : 'text-gray-500 hover:text-gray-300' }}">
-                        @if ($feedType === 'following')
-                            <span class="w-2 h-2 bg-[#E10600] rounded-full"></span>
-                        @endif
-                        Siguiendo
+                        class="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] flex items-center gap-2 transition-all {{ $feedType === 'following' ? 'text-[#E10600]' : 'text-gray-400 hover:text-white' }}">
+                        SIGUIENDO
                     </button>
                 </div>
+
+                <div class="p-4 sm:p-6">
 
                 @if ($posts->isEmpty())
                     <div class="text-center text-gray-500 py-10 italic text-[12px] uppercase tracking-widest">
