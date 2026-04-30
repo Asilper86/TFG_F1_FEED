@@ -238,31 +238,31 @@ export default function Dashboard({ laps, activeSession }) {
                             selectedLap={selectedLap}
                             activeSession={activeSession}
                         />
-                        <div className="flex items-center justify-between mb-4 mt-8 bg-[#1B1D21] p-2 px-4 rounded border border-[#2d3136]">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 mt-8 bg-[#1B1D21] p-3 md:px-4 rounded border border-[#2d3136] gap-3">
                             <h4 className="text-[11px] font-bold uppercase tracking-widest text-white">PERFORMANCE TRACE</h4>
 
-                            <div className="flex space-x-2">
+                            <div className="flex flex-wrap gap-2">
                                 <button
                                     onClick={() => cambiarMetricas('speed')}
-                                    className={`px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.speed ? 'bg-[#3FA9F5]/20 text-[#3FA9F5] border border-[#3FA9F5]/50' : 'bg-[#121418] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
+                                    className={`px-3 sm:px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.speed ? 'bg-[#3FA9F5]/20 text-[#3FA9F5] border border-[#3FA9F5]/50' : 'bg-[#121418] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
                                 >
                                     SPEED
                                 </button>
                                 <button
                                     onClick={() => cambiarMetricas('throttle')}
-                                    className={`px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.throttle ? 'bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/50' : 'bg-[#121418] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
+                                    className={`px-3 sm:px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.throttle ? 'bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/50' : 'bg-[#121418] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
                                 >
                                     THROTTLE
                                 </button>
                                 <button
                                     onClick={() => cambiarMetricas('brake')}
-                                    className={`px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.brake ? 'bg-[#E10600]/20 text-[#E10600] border border-[#E10600]/50' : 'bg-[#121418] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
+                                    className={`px-3 sm:px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.brake ? 'bg-[#E10600]/20 text-[#E10600] border border-[#E10600]/50' : 'bg-[#121418] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
                                 >
                                     BRAKE
                                 </button>
                                 <button
                                     onClick={() => cambiarMetricas('gear')}
-                                    className={`px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.gear ? 'bg-[#eab308]/20 text-[#eab308] border border-[#eab308]/50' : 'bg-[#121418] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
+                                    className={`px-3 sm:px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded transition-colors ${visibleMetrics.gear ? 'bg-[#eab308]/20 text-[#eab308] border border-[#eab308]/50' : 'bg-[#121418] text-gray-500 border border-[#2d3136] hover:text-gray-300'}`}
                                 >
                                     GEAR
                                 </button>
