@@ -6,7 +6,7 @@
     <!-- Repost Header -->
     @if ($post->original_post_id)
         <div class="px-4 py-2 bg-[#23262A] border-b border-[#2d3136] flex items-center gap-2">
-            <i class="fa-solid fa-retweet text-[#00D100] text-[11px]"></i>
+            <svg class="w-4 h-4 text-[#00D100]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
             <span class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">{{ $post->user->name }} ha reposteado</span>
         </div>
     @endif
@@ -23,7 +23,7 @@
         <div class="flex-1 min-w-0">
             <!-- Header Row -->
             <div class="flex items-start justify-between mb-2">
-                <div class="flex items-center flex-wrap gap-x-2 gap-y-1">
+                <div class="flex items-center flex-wrap gap-2">
                     <a href="/profile/{{ $displayPost->user->id }}" class="text-sm font-bold text-white hover:underline truncate">
                         {{ $displayPost->user->name }}
                     </a>
@@ -34,7 +34,7 @@
 
                 @if ((int) auth()->id() === (int) $post->user_id)
                     <button wire:click="deletePost" wire:confirm="¿Borrar post?" class="text-gray-500 hover:text-[#E10600] transition-colors p-1 shrink-0">
-                        <i class="fa-solid fa-trash-can text-sm"></i>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                 @endif
             </div>
@@ -69,27 +69,27 @@
                             </p>
                         </div>
                         <div class="text-right">
-                            <span class="text-[10px] text-gray-500 uppercase font-bold">Ver Datos <i class="fa-solid fa-chevron-right ml-1"></i></span>
+                            <span class="text-[10px] text-gray-500 uppercase font-bold flex items-center justify-end">Ver Datos <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></span>
                         </div>
                     </div>
                 </div>
             @endif
 
             <!-- Actions -->
-            <div class="flex items-center gap-6 mt-3 pt-3 border-t border-[#2d3136] text-gray-400">
+            <div class="flex items-center gap-8 mt-3 pt-3 border-t border-[#2d3136] text-gray-400">
                 <button wire:click="toggleLike" class="flex items-center gap-2 transition-colors hover:text-[#E10600] {{ $hasLiked ? 'text-[#E10600]' : '' }}">
-                    <i class="fa-{{ $hasLiked ? 'solid' : 'regular' }} fa-heart text-[15px]"></i>
-                    <span class="text-xs font-bold">{{ $likesCount }}</span>
+                    <svg class="w-5 h-5 {{ $hasLiked ? 'fill-current' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                    <span class="text-xs font-bold">{{ $likesCount > 0 ? $likesCount : '' }}</span>
                 </button>
 
                 <button wire:click="repost" class="flex items-center gap-2 transition-colors hover:text-[#00D100] {{ $hasReposted ? 'text-[#00D100]' : '' }}">
-                    <i class="fa-solid fa-retweet text-[15px]"></i>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     <span class="text-xs font-bold">{{ $hasReposted ? '1' : '' }}</span>
                 </button>
 
                 <button wire:click="toggleComments" class="flex items-center gap-2 transition-colors hover:text-[#3FA9F5] {{ $showComments ? 'text-[#3FA9F5]' : '' }}">
-                    <i class="fa-regular fa-comment text-[15px]"></i>
-                    <span class="text-xs font-bold">{{ $commentsCount }}</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                    <span class="text-xs font-bold">{{ $commentsCount > 0 ? $commentsCount : '' }}</span>
                 </button>
             </div>
             

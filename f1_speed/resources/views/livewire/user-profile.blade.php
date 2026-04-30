@@ -36,15 +36,18 @@
                     <p class="mt-3 text-gray-300 text-sm leading-relaxed">{{ $profileUser->bio }}</p>
                 @endif
 
-                <div class="flex gap-4 mt-4 text-sm">
-                    <button wire:click="openFollowingModal" class="hover:underline">
-                        <span class="font-bold text-white">{{ $followingCount }}</span> <span class="text-gray-500">Siguiendo</span>
+                <div class="flex gap-8 mt-6">
+                    <button wire:click="openFollowingModal" class="flex flex-col items-start hover:opacity-80 transition-opacity">
+                        <span class="text-2xl font-black text-white leading-none">{{ $followingCount }}</span> 
+                        <span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest mt-1.5">Siguiendo</span>
                     </button>
-                    <button wire:click="openFollowersModal" class="hover:underline">
-                        <span class="font-bold text-white">{{ $followersCount }}</span> <span class="text-gray-500">Seguidores</span>
+                    <button wire:click="openFollowersModal" class="flex flex-col items-start hover:opacity-80 transition-opacity">
+                        <span class="text-2xl font-black text-white leading-none">{{ $followersCount }}</span> 
+                        <span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest mt-1.5">Seguidores</span>
                     </button>
-                    <span class="text-gray-500 ml-auto hidden sm:inline text-xs mt-1">
-                        <i class="fa-regular fa-calendar mr-1"></i> Se unió en {{ $profileUser->created_at->format('M Y') }}
+                    <span class="text-gray-500 ml-auto hidden sm:flex items-end text-xs pb-1">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        Se unió en {{ $profileUser->created_at->format('M Y') }}
                     </span>
                 </div>
             </div>
