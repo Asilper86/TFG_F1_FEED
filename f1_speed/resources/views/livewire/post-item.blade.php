@@ -27,6 +27,11 @@
                     <a href="/profile/{{ $displayPost->user->id }}" class="text-sm font-bold text-white hover:underline truncate">
                         {{ $displayPost->user->name }}
                     </a>
+                    @if ((int) auth()->id() !== (int) $displayPost->user_id)
+                        <button wire:click="toggleFollow" class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded border transition-colors {{ $isFollowing ? 'border-[#2d3136] text-gray-500 hover:text-white' : 'border-[#E10600] text-[#E10600] hover:bg-[#E10600] hover:text-white' }}">
+                            {{ $isFollowing ? 'Siguiendo' : 'Seguir' }}
+                        </button>
+                    @endif
                     <span class="text-gray-500 text-xs truncate">@pilot_{{ $displayPost->user->id }}</span>
                     <span class="text-gray-600 text-xs">·</span>
                     <span class="text-gray-500 text-xs whitespace-nowrap">{{ $displayPost->created_at->diffForHumans(short: true) }}</span>
@@ -41,7 +46,7 @@
 
             <!-- Content -->
             @if ($displayPost->content)
-                <div class="text-sm text-gray-200 leading-relaxed mb-3 whitespace-pre-line break-words">
+                <div class="text-sm text-white leading-relaxed mb-3 whitespace-pre-line break-words">
                     {!! App\Helpers\TextHelper::parseHashtags($displayPost->content) !!}
                 </div>
             @endif
@@ -99,9 +104,25 @@
                     @foreach ($displayPost->comments as $comment)
                         @livewire('comment-item', ['comment' => $comment], key('comment-'.$comment->id))
                     @endforeach
-                    <div class="flex gap-2">
-                        <input wire:model="newComment" type="text" class="flex-1 bg-[#121418] border border-[#2d3136] rounded text-sm text-white px-3 py-2 outline-none focus:border-[#E10600]" placeholder="Escribe tu respuesta...">
-                        <button wire:click="addComment" class="bg-[#E10600] hover:bg-red-700 text-white text-[11px] font-black uppercase px-4 py-2 rounded transition-colors">Responder</button>
+                    <div class="flex flex-col gap-2">
+                        <div class="flex gap-2 items-center">
+                            <input wire:model="newComment" type="text" class="flex-1 bg-[#121418] border border-[#2d3136] rounded text-sm text-white px-3 py-2 outline-none focus:border-[#E10600]" placeholder="Escribe tu respuesta...">
+                            
+                            <label class="cursor-pointer text-gray-500 hover:text-[#E10600] transition-colors p-2">
+                                <input type="file" wire:model="commentMedia" class="hidden" accept="image/*,video/*">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </label>
+
+                            <button wire:click="addComment" class="bg-[#E10600] hover:bg-red-700 text-white text-[11px] font-black uppercase px-4 py-2 rounded transition-colors">Responder</button>
+                        </div>
+                        @if ($commentMedia)
+                            <div class="relative inline-block w-fit mt-1">
+                                <img src="{{ $commentMedia->temporaryUrl() }}" class="h-16 rounded border border-[#2d3136] object-cover">
+                                <button wire:click="$set('commentMedia', null)" class="absolute -top-2 -right-2 bg-[#E10600] text-white rounded-full w-4 h-4 flex items-center justify-center shadow-lg">
+                                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+                        @endif
                     </div>
                 </div>
             @endif
