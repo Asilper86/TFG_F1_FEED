@@ -1,123 +1,110 @@
-<div
-    class="relative bg-[#1B1D21] border border-[#2d3136] rounded-md mb-4 shadow-sm transition-all hover:border-[#3FA9F5]/30 overflow-hidden">
-    @if ($post->original_post_id)
-        <div class="px-5 pt-3 flex items-center gap-2 text-gray-400">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="m17 2 4 4-4 4" />
-                <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
-                <path d="m7 22-4-4 4-4" />
-                <path d="M21 13v1a4 4 0 0 1-4 4H3" />
-            </svg>
-            <span class="text-[9px] font-bold uppercase tracking-[0.1em] italic">
-                {{ $post->user_id === auth()->id() ? 'Reposteaste' : $post->user->name . ' ha compartido esto' }}
-            </span>
-        </div>
-    @endif
-
     @php
         $displayPost = $post->original_post_id ? $post->originalPost : $post;
     @endphp
 
-    <div class="bg-[#1B1D21] border border-white/5 rounded-xl hover:border-white/10 transition-all duration-200 shadow-lg">
-        <!-- Repost Header -->
-        @if ($post->original_post_id)
-            <div class="px-4 py-1.5 border-b border-white/5 bg-white/[0.02] flex items-center gap-2">
-                <i class="fa-solid fa-retweet text-green-500 text-[10px]"></i>
-                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{{ $post->user->name }} ha compartido</span>
-            </div>
-        @endif
+<div class="bg-[#1B1D21] border border-[#2d3136] rounded-lg shadow-md mb-4 overflow-hidden">
+    <!-- Repost Header -->
+    @if ($post->original_post_id)
+        <div class="px-4 py-2 bg-[#23262A] border-b border-[#2d3136] flex items-center gap-2">
+            <i class="fa-solid fa-retweet text-[#00D100] text-[11px]"></i>
+            <span class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">{{ $post->user->name }} ha reposteado</span>
+        </div>
+    @endif
 
-        <div class="p-4 flex gap-4">
-            <!-- Left: Avatar -->
-            <div class="shrink-0">
-                <a href="/profile/{{ $displayPost->user->id }}">
-                    <img src="{{ $displayPost->user->profile_photo_url }}" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border border-white/10 shadow-sm">
-                </a>
-            </div>
+    <div class="p-4 sm:p-5 flex gap-3 sm:gap-4">
+        <!-- Left: Avatar -->
+        <div class="shrink-0">
+            <a href="/profile/{{ $displayPost->user->id }}">
+                <img src="{{ $displayPost->user->profile_photo_url }}" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-[#2d3136] object-cover">
+            </a>
+        </div>
 
-            <!-- Right: Content -->
-            <div class="flex-1 min-w-0">
-                <!-- Top Row: Name and Time -->
-                <div class="flex items-center justify-between mb-1">
-                    <div class="flex items-center gap-2 min-w-0">
-                        <a href="/profile/{{ $displayPost->user->id }}" class="text-[14px] font-black uppercase italic text-white hover:text-[#E10600] transition-colors truncate">
-                            {{ $displayPost->user->name }}
-                        </a>
-                        <span class="text-gray-600 text-[11px] font-bold truncate">@pilot_{{ $displayPost->user->id }}</span>
-                        <span class="text-gray-700 text-[11px] font-bold">·</span>
-                        <span class="text-gray-500 text-[11px] font-medium whitespace-nowrap">{{ $displayPost->created_at->diffForHumans(short: true) }}</span>
-                    </div>
-
-                    @if ((int) auth()->id() === (int) $post->user_id)
-                        <button wire:click="deletePost" wire:confirm="¿Borrar post?" class="text-gray-700 hover:text-red-500 transition-colors p-1">
-                            <i class="fa-solid fa-xmark text-xs"></i>
-                        </button>
-                    @endif
+        <!-- Right: Content -->
+        <div class="flex-1 min-w-0">
+            <!-- Header Row -->
+            <div class="flex items-start justify-between mb-2">
+                <div class="flex items-center flex-wrap gap-x-2 gap-y-1">
+                    <a href="/profile/{{ $displayPost->user->id }}" class="text-sm font-bold text-white hover:underline truncate">
+                        {{ $displayPost->user->name }}
+                    </a>
+                    <span class="text-gray-500 text-xs truncate">@pilot_{{ $displayPost->user->id }}</span>
+                    <span class="text-gray-600 text-xs">·</span>
+                    <span class="text-gray-500 text-xs whitespace-nowrap">{{ $displayPost->created_at->diffForHumans(short: true) }}</span>
                 </div>
 
-                <!-- Message -->
-                @if ($displayPost->content)
-                    <div class="text-[14px] text-gray-200 leading-snug mb-3 break-words font-medium">
-                        {!! App\Helpers\TextHelper::parseHashtags($displayPost->content) !!}
-                    </div>
+                @if ((int) auth()->id() === (int) $post->user_id)
+                    <button wire:click="deletePost" wire:confirm="¿Borrar post?" class="text-gray-500 hover:text-[#E10600] transition-colors p-1 shrink-0">
+                        <i class="fa-solid fa-trash-can text-sm"></i>
+                    </button>
                 @endif
+            </div>
 
-                <!-- Image -->
-                @if ($displayPost->media_path)
-                    <div class="mb-3 rounded-lg overflow-hidden border border-white/5">
-                        <img src="{{ asset('storage/' . $displayPost->media_path) }}" class="w-full max-h-[400px] object-cover">
-                    </div>
-                @endif
+            <!-- Content -->
+            @if ($displayPost->content)
+                <div class="text-sm text-gray-200 leading-relaxed mb-3 whitespace-pre-line break-words">
+                    {!! App\Helpers\TextHelper::parseHashtags($displayPost->content) !!}
+                </div>
+            @endif
 
-                <!-- Telemetry Card (Compact) -->
-                @if ($displayPost->lap)
-                    @php
-                        $tracks = ['1' => 'Monza', '2' => 'Spa', '3' => 'Silverstone', '4' => 'Monaco', '5' => 'Barcelona'];
-                        $trackName = $tracks[$displayPost->lap->session->track_id] ?? 'Circuit';
-                    @endphp
-                    <div class="mb-3 bg-[#121418] border-l-2 border-[#E10600] rounded-r-lg p-3 flex items-center justify-between group cursor-pointer hover:bg-[#16181d] transition-all" onclick="window.location='{{ route('dashboard') }}'">
+            <!-- Media -->
+            @if ($displayPost->media_path)
+                <div class="mb-3 rounded border border-[#2d3136] overflow-hidden">
+                    <img src="{{ asset('storage/' . $displayPost->media_path) }}" class="w-full max-h-96 object-cover">
+                </div>
+            @endif
+
+            <!-- Telemetry -->
+            @if ($displayPost->lap)
+                @php
+                    $tracks = ['1' => 'Monza', '2' => 'Spa', '3' => 'Silverstone', '4' => 'Monaco', '5' => 'Barcelona'];
+                    $trackName = $tracks[$displayPost->lap->session->track_id] ?? 'Circuito';
+                @endphp
+                <div class="mb-3 bg-[#121418] border border-[#2d3136] rounded-md overflow-hidden flex items-stretch cursor-pointer hover:bg-[#16181d] transition-colors" onclick="window.location='{{ route('dashboard') }}'">
+                    <div class="w-1.5 bg-[#E10600] shrink-0"></div>
+                    <div class="p-3 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 min-w-0">
                         <div>
-                            <p class="text-[9px] font-black text-[#E10600] uppercase tracking-widest mb-0.5">{{ $trackName }} LAP</p>
-                            <p class="text-base font-black text-white font-mono italic">
+                            <p class="text-[10px] font-black text-[#E10600] uppercase tracking-widest mb-1">{{ $trackName }}</p>
+                            <p class="text-xl font-bold text-white font-mono leading-none">
                                 {{ floor($displayPost->lap->lap_time / 60) }}:{{ str_pad(number_format(fmod($displayPost->lap->lap_time, 60), 3), 6, '0', STR_PAD_LEFT) }}
                             </p>
                         </div>
-                        <i class="fa-solid fa-chevron-right text-gray-800 group-hover:text-white transition-colors text-[10px]"></i>
+                        <div class="text-right">
+                            <span class="text-[10px] text-gray-500 uppercase font-bold">Ver Datos <i class="fa-solid fa-chevron-right ml-1"></i></span>
+                        </div>
                     </div>
-                @endif
-
-                <!-- Action Bar (Icons) -->
-                <div class="flex items-center gap-6 pt-1 text-gray-500">
-                    <button wire:click="toggleLike" class="flex items-center gap-1.5 transition-colors group {{ $hasLiked ? 'text-red-500' : 'hover:text-red-500' }}">
-                        <i class="fa-{{ $hasLiked ? 'solid' : 'regular' }} fa-heart text-[14px]"></i>
-                        <span class="text-[11px] font-bold">{{ $likesCount }}</span>
-                    </button>
-
-                    <button wire:click="repost" class="flex items-center gap-1.5 transition-colors group {{ $hasReposted ? 'text-green-500' : 'hover:text-green-500' }}">
-                        <i class="fa-solid fa-retweet text-[14px]"></i>
-                        <span class="text-[11px] font-bold">{{ $hasReposted ? '1' : '' }}</span>
-                    </button>
-
-                    <button wire:click="toggleComments" class="flex items-center gap-1.5 transition-colors group hover:text-blue-400">
-                        <i class="fa-regular fa-comment text-[14px]"></i>
-                        <span class="text-[11px] font-bold">{{ $commentsCount }}</span>
-                    </button>
                 </div>
+            @endif
+
+            <!-- Actions -->
+            <div class="flex items-center gap-6 mt-3 pt-3 border-t border-[#2d3136] text-gray-400">
+                <button wire:click="toggleLike" class="flex items-center gap-2 transition-colors hover:text-[#E10600] {{ $hasLiked ? 'text-[#E10600]' : '' }}">
+                    <i class="fa-{{ $hasLiked ? 'solid' : 'regular' }} fa-heart text-[15px]"></i>
+                    <span class="text-xs font-bold">{{ $likesCount }}</span>
+                </button>
+
+                <button wire:click="repost" class="flex items-center gap-2 transition-colors hover:text-[#00D100] {{ $hasReposted ? 'text-[#00D100]' : '' }}">
+                    <i class="fa-solid fa-retweet text-[15px]"></i>
+                    <span class="text-xs font-bold">{{ $hasReposted ? '1' : '' }}</span>
+                </button>
+
+                <button wire:click="toggleComments" class="flex items-center gap-2 transition-colors hover:text-[#3FA9F5] {{ $showComments ? 'text-[#3FA9F5]' : '' }}">
+                    <i class="fa-regular fa-comment text-[15px]"></i>
+                    <span class="text-xs font-bold">{{ $commentsCount }}</span>
+                </button>
             </div>
+            
+            <!-- Comments -->
+            @if ($showComments)
+                <div class="mt-4 pt-4 border-t border-[#2d3136] space-y-4">
+                    @foreach ($displayPost->comments as $comment)
+                        @livewire('comment-item', ['comment' => $comment], key('comment-'.$comment->id))
+                    @endforeach
+                    <div class="flex gap-2">
+                        <input wire:model="newComment" type="text" class="flex-1 bg-[#121418] border border-[#2d3136] rounded text-sm text-white px-3 py-2 outline-none focus:border-[#E10600]" placeholder="Escribe tu respuesta...">
+                        <button wire:click="addComment" class="bg-[#E10600] hover:bg-red-700 text-white text-[11px] font-black uppercase px-4 py-2 rounded transition-colors">Responder</button>
+                    </div>
+                </div>
+            @endif
         </div>
-
-        <!-- Comments Section -->
-        @if ($showComments)
-            <div class="px-4 pb-4 space-y-4 border-t border-white/5 pt-4 bg-white/[0.01]">
-                @foreach ($displayPost->comments as $comment)
-                    @livewire('comment-item', ['comment' => $comment], key('comment-'.$comment->id))
-                @endforeach
-                <div class="flex gap-2">
-                    <input wire:model="newComment" class="flex-1 bg-[#121418] border border-white/5 rounded-lg text-xs text-white px-3 py-1.5 outline-none focus:border-[#E10600]" placeholder="Añade tu respuesta...">
-                    <button wire:click="addComment" class="bg-[#E10600] hover:bg-red-600 text-white text-[10px] font-black uppercase px-4 py-1.5 rounded-lg transition-all">Enviar</button>
-                </div>
-            </div>
-        @endif
-    </div></div>
+    </div>
 </div>

@@ -1,78 +1,71 @@
-<div class="py-6 sm:py-10 bg-[#0B0C0E] min-h-screen text-white font-sans">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6">
-        <!-- Profile Header Card -->
-        <div class="bg-[#1B1D21] border border-white/5 rounded-2xl overflow-hidden mb-8 shadow-2xl">
-            <div class="h-32 sm:h-44 bg-gradient-to-r from-[#E10600] to-black relative">
-                <div class="absolute inset-0 bg-black/20"></div>
-            </div>
-            <div class="px-6 sm:px-8 pb-8 relative">
-                <div class="flex justify-between items-end -mt-12 sm:-mt-16 mb-6">
-                    <div class="relative group">
-                        <img src="{{ $profileUser->profile_photo_url }}"
-                            class="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-[#1B1D21] object-cover bg-[#1B1D21] shadow-2xl">
-                    </div>
+<div class="py-8 bg-[#121418] min-h-screen text-white font-sans">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+        
+        <!-- Profile Header -->
+        <div class="bg-[#1B1D21] border border-[#2d3136] rounded-lg overflow-hidden mb-6 shadow-md">
+            <!-- Banner -->
+            <div class="h-32 sm:h-40 bg-gradient-to-r from-[#E10600] to-black"></div>
+            
+            <!-- Info -->
+            <div class="px-4 sm:px-6 pb-6 relative">
+                <!-- Avatar & Actions Row -->
+                <div class="flex justify-between items-end -mt-12 sm:-mt-16 mb-4">
+                    <img src="{{ $profileUser->profile_photo_url }}"
+                        class="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-[#1B1D21] object-cover bg-[#1B1D21]">
                     
-                    <div class="flex items-center gap-3">
+                    <div class="flex gap-2 mb-2">
                         @if (auth()->id() === $profileUser->id)
-                            <button wire:click="openEditModal" class="px-5 py-2 rounded-xl bg-white/5 border border-white/10 text-[11px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">
-                                Editar Perfil
+                            <button wire:click="openEditModal" class="px-4 py-1.5 rounded border border-[#2d3136] text-xs font-bold uppercase tracking-widest hover:bg-[#2d3136] transition-colors">
+                                Editar
                             </button>
                         @elseif(auth()->check())
-                            <button wire:click="toggleFollow" class="px-6 py-2 rounded-xl font-black text-[11px] uppercase tracking-widest transition-all {{ $isFollowing ? 'bg-white/5 border border-white/10 text-white' : 'bg-[#E10600] text-white hover:bg-red-600 shadow-[0_0_15px_rgba(225,6,0,0.3)]' }}">
-                                {{ $isFollowing ? 'Siguiendo' : 'Seguir Piloto' }}
+                            <button wire:click="toggleFollow" class="px-4 py-1.5 rounded text-xs font-bold uppercase tracking-widest transition-colors {{ $isFollowing ? 'border border-[#2d3136] bg-transparent text-white hover:border-gray-500' : 'bg-[#E10600] text-white hover:bg-red-700' }}">
+                                {{ $isFollowing ? 'Siguiendo' : 'Seguir' }}
                             </button>
                         @endif
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                    <div>
-                        <h1 class="text-3xl font-black uppercase italic tracking-tighter">{{ $profileUser->name }}</h1>
-                        <p class="text-gray-500 text-xs font-bold uppercase tracking-[0.2em] mt-1 flex items-center gap-2">
-                            @pilot_{{ $profileUser->id }} 
-                            <span class="w-1 h-1 bg-gray-700 rounded-full"></span>
-                            <span class="text-gray-600">Miembro desde {{ $profileUser->created_at->format('M Y') }}</span>
-                        </p>
-                        @if ($profileUser->bio)
-                            <p class="mt-4 text-gray-400 text-sm leading-relaxed italic border-l-2 border-[#E10600]/30 pl-4">"{{ $profileUser->bio }}"</p>
-                        @endif
-                    </div>
-                    
-                    <div class="flex gap-10 md:justify-end">
-                        <button wire:click="openFollowersModal" class="text-center group">
-                            <span class="block text-2xl font-black group-hover:text-[#E10600] transition-colors leading-none">{{ $followersCount }}</span>
-                            <span class="text-[9px] text-gray-500 uppercase tracking-[0.3em] font-black mt-1 block">Seguidores</span>
-                        </button>
-                        <button wire:click="openFollowingModal" class="text-center group">
-                            <span class="block text-2xl font-black group-hover:text-[#E10600] transition-colors leading-none">{{ $followingCount }}</span>
-                            <span class="text-[9px] text-gray-500 uppercase tracking-[0.3em] font-black mt-1 block">Siguiendo</span>
-                        </button>
-                    </div>
+                <!-- Name & Bio -->
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-black italic uppercase">{{ $profileUser->name }}</h1>
+                    <p class="text-gray-500 text-sm">@pilot_{{ $profileUser->id }}</p>
+                </div>
+
+                @if ($profileUser->bio)
+                    <p class="mt-3 text-gray-300 text-sm leading-relaxed">{{ $profileUser->bio }}</p>
+                @endif
+
+                <div class="flex gap-4 mt-4 text-sm">
+                    <button wire:click="openFollowingModal" class="hover:underline">
+                        <span class="font-bold text-white">{{ $followingCount }}</span> <span class="text-gray-500">Siguiendo</span>
+                    </button>
+                    <button wire:click="openFollowersModal" class="hover:underline">
+                        <span class="font-bold text-white">{{ $followersCount }}</span> <span class="text-gray-500">Seguidores</span>
+                    </button>
+                    <span class="text-gray-500 ml-auto hidden sm:inline text-xs mt-1">
+                        <i class="fa-regular fa-calendar mr-1"></i> Se unió en {{ $profileUser->created_at->format('M Y') }}
+                    </span>
                 </div>
             </div>
         </div>
 
-        <!-- Activity Grid -->
-        <div class="flex items-center gap-3 mb-6">
-            <div class="w-1.5 h-5 bg-[#E10600]"></div>
-            <h2 class="text-sm font-black uppercase tracking-[0.3em] text-white italic">Muro de Actividad</h2>
+        <!-- Timeline Section -->
+        <div class="flex items-center gap-2 mb-4 pb-2 border-b border-[#2d3136]">
+            <span class="text-white font-bold text-sm uppercase tracking-widest">Actividad</span>
         </div>
 
         <div class="space-y-4">
             @forelse ($posts as $post)
                 @livewire('post-item', ['post' => $post], key('post-' . $post->id))
             @empty
-                <div class="bg-[#1B1D21] border border-white/5 rounded-2xl p-16 text-center">
-                    <i class="fa-solid fa-ghost text-3xl text-gray-800 mb-4"></i>
-                    <p class="text-gray-600 text-[10px] uppercase tracking-[0.4em] font-black italic">Sin actividad registrada</p>
+                <div class="bg-[#1B1D21] border border-[#2d3136] rounded-lg p-10 text-center text-gray-500 text-sm">
+                    Sin actividad reciente.
                 </div>
             @endforelse
         </div>
     </div>
-    </div>
-
-
-    </div>
+    <!-- End Main Content -->
     @if ($showEditModal)
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 backdrop-blur-sm p-4">
             <div class="bg-[#1B1D21] border border-[#2d3136] rounded-lg shadow-2xl w-full max-w-md overflow-hidden">
