@@ -1,89 +1,67 @@
-<div class="py-12 bg-[#121418] min-h-screen text-white">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
-        <!-- Header del Perfil -->
-        <div class="bg-[#1B1D21] border border-[#2d3136] rounded-lg overflow-hidden mb-8 shadow-lg">
-            <!-- Banner superior -->
-            <div class="h-32 bg-gradient-to-r from-[#E10600] to-black"></div>
-
-            <div class="px-4 sm:px-8 pb-8 relative">
-                <div class="flex flex-col sm:flex-row justify-between items-center sm:items-end -mt-10 sm:-mt-12 mb-6 gap-4">
+<div class="py-0 sm:py-4 bg-[#121418] min-h-screen text-white font-sans">
+    <div class="max-w-2xl mx-auto border-x border-[#2d3136] min-h-screen">
+        <!-- Header con Banner -->
+        <div class="relative">
+            <div class="h-32 sm:h-48 bg-gradient-to-r from-[#E10600] to-black"></div>
+            <div class="px-4 pb-4">
+                <div class="relative flex justify-between items-end -mt-12 sm:-mt-16 mb-4">
                     <img src="{{ $profileUser->profile_photo_url }}"
-                        class="w-24 h-24 rounded-full border-4 border-[#1B1D21] object-cover bg-[#1B1D21] shadow-2xl">
-
-                    <div class="flex items-center gap-3">
-                        @if (auth()->id() !== $profileUser->id)
-                            <button wire:click="toggleFollow"
-                                class="px-6 py-2.5 rounded font-black text-[10px] uppercase tracking-[0.2em] transition-all {{ $isFollowing ? 'bg-[#2d3136] text-white hover:bg-gray-700' : 'bg-[#E10600] text-white hover:bg-[#ff0700] shadow-[0_0_15px_rgba(225,6,0,0.3)]' }}">
-                                {{ $isFollowing ? 'Siguiendo' : 'Seguir Piloto' }}
-                            </button>
-                        @endif
-                        
+                        class="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-[#121418] object-cover bg-[#121418] shadow-xl">
+                    
+                    <div class="mb-2">
                         @if (auth()->id() === $profileUser->id)
-                            <button wire:click="openEditModal"
-                                class="px-6 py-2.5 rounded font-black text-[10px] uppercase tracking-[0.2em] border border-[#2d3136] text-white hover:bg-white hover:text-black transition-all">
-                                Editar Perfil
+                            <button wire:click="openEditModal" class="px-4 py-1.5 rounded-full border border-[#2d3136] text-[13px] font-bold hover:bg-[#2d3136] transition-all">
+                                Editar perfil
+                            </button>
+                        @elseif(auth()->check())
+                            <button wire:click="toggleFollow" class="px-4 py-1.5 rounded-full font-bold text-[13px] {{ $isFollowing ? 'border border-[#2d3136] text-white hover:bg-red-500/10 hover:text-red-500 hover:border-red-500' : 'bg-white text-black hover:bg-gray-200' }}">
+                                {{ $isFollowing ? 'Siguiendo' : 'Seguir' }}
                             </button>
                         @endif
                     </div>
                 </div>
 
-                <div class="text-center sm:text-left">
-                    <h1 class="text-3xl sm:text-4xl font-black uppercase tracking-tighter italic">{{ $profileUser->name }}</h1>
-                    <p class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mt-1">{{ $profileUser->email }}</p>
+                <div class="mb-4">
+                    <h1 class="text-xl sm:text-2xl font-black italic uppercase tracking-tight">{{ $profileUser->name }}</h1>
+                    <p class="text-gray-500 text-[14px]">@pilot_{{ $profileUser->id }}</p>
                 </div>
-                @if (auth()->id() === $profileUser->id)
-                    <button wire:click="openEditModal"
-                        class="px-6 py-2 rounded font-bold text-xs uppercase tracking-widest border border-[#2d3136] text-white hover:bg-white hover:text-black transition-all">
-                        Editar Perfil
-                    </button>
-                @endif
+
                 @if ($profileUser->bio)
-                    <p class="text-gray-300 text-sm mt-4 italic">"{{ $profileUser->bio }}"</p>
+                    <p class="text-[14px] text-gray-200 mb-4 leading-normal">{{ $profileUser->bio }}</p>
                 @endif
-                <div class="flex gap-6 border-t border-[#2d3136] pt-4 mt-4">
-                    <div wire:click="openFollowersModal" class="cursor-pointer hover:opacity-80 transition-opacity">
-                        <span class="block text-2xl font-black text-white">{{ $followersCount }}</span>
-                        <span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Seguidores</span>
-                    </div>
 
-                    <div wire:click="openFollowingModal" class="cursor-pointer hover:opacity-80 transition-opacity">
-                        <span class="block text-2xl font-black text-white">{{ $followingCount }}</span>
-                        <span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Seguidos</span>
-                    </div>
-
+                <div class="flex gap-4 text-[13px]">
+                    <button wire:click="openFollowingModal" class="hover:underline text-gray-500">
+                        <span class="text-white font-bold">{{ $followingCount }}</span> Siguiendo
+                    </button>
+                    <button wire:click="openFollowersModal" class="hover:underline text-gray-500">
+                        <span class="text-white font-bold">{{ $followersCount }}</span> Seguidores
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="col-span-1 lg:col-span-2 space-y-6">
-                <h2 class="text-lg font-bold text-white uppercase tracking-widest mb-4 border-b border-[#2d3136] pb-2">
-                    Posts de {{ $profileUser->name }}</h2>
-
-                @forelse ($posts as $post)
-                    @livewire('post-item', ['post' => $post], key('post-' . $post->id))
-                @empty
-                    <div class="bg-[#1B1D21] border border-[#2d3136] rounded-md p-8 text-center">
-                        <p class="text-gray-500 text-sm uppercase tracking-widest font-bold mb-2">Sin actividad</p>
-                        <p class="text-gray-400 text-xs">Este piloto aún no ha publicado nada en su muro.</p>
-                    </div>
-                @endforelse
-            </div>
-
-            <div class="col-span-1">
-                <div class="bg-[#1B1D21] border border-[#2d3136] rounded-md p-5 sticky top-6">
-                    <h3 class="text-[11px] font-black uppercase tracking-widest text-gray-400 mb-4">Información del
-                        Piloto</h3>
-                    <ul class="space-y-3 text-sm text-gray-300">
-                        <li class="flex items-center justify-between">
-                            <span class="text-gray-500">Miembro desde</span>
-                            <span class="font-bold">{{ $profileUser->created_at->format('M Y') }}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+        <!-- Tabs de Perfil -->
+        <div class="flex border-b border-[#2d3136] mt-2">
+            <button class="flex-1 py-4 text-[14px] font-bold border-b-4 border-[#E10600] text-white italic uppercase tracking-widest">
+                Posts
+            </button>
+            <button class="flex-1 py-4 text-[14px] font-bold text-gray-500 hover:bg-white/5 transition-colors italic uppercase tracking-widest">
+                Media
+            </button>
         </div>
+
+        <!-- Lista de Posts (Estilo Timeline) -->
+        <div class="divide-y divide-[#2d3136]">
+            @forelse ($posts as $post)
+                @livewire('post-item', ['post' => $post], key('post-' . $post->id))
+            @empty
+                <div class="p-10 text-center text-gray-500 italic text-[13px] uppercase tracking-widest">
+                    Este piloto aún no ha posteado telemetría.
+                </div>
+            @endforelse
+        </div>
+    </div>
 
 
     </div>
