@@ -23,7 +23,6 @@ class PostItem extends Component
     public $commentsCount = 0;
     public $hasReposted = false;
 
-    // ID del post "real" (si es repost, el original; si no, el propio)
     public $targetPostId;
 
     private function getTarget(): Social_post
@@ -55,12 +54,10 @@ class PostItem extends Component
 
     public function deletePost()
     {
-        // Recargamos el post fresco de la BD para evitar problemas de estado
         $post = Social_post::find($this->post->id);
 
         if (!$post) return;
 
-        // Comprobamos que el usuario autenticado es el dueño
         if ((int) auth()->id() !== (int) $post->user_id) {
             return;
         }
