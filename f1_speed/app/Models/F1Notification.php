@@ -12,19 +12,17 @@ class F1Notification extends Model
 
     protected $casts = ['read_at' => 'datetime'];
 
-    // Quién recibe la notificación
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Quién genera la notificación (el que da like, sigue, etc.)
+   
     public function actor()
     {
         return $this->belongsTo(User::class, 'actor_id');
     }
 
-    // El post o lap al que hace referencia (relación polimórfica)
     public function notifiable()
     {
         return $this->morphTo();
