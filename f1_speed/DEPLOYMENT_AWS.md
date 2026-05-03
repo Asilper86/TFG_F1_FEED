@@ -35,15 +35,20 @@ sudo mv composer.phar /usr/local/bin/composer
 ## 3. Despliegue del Código
 ```bash
 cd /var/www
-# Clona tu repositorio (usa SSH o Personal Access Token)
-sudo git clone https://github.com/TU_USUARIO/TU_REPOSITORIO.git f1_speed
-sudo chown -R $USER:$USER f1_speed
+sudo mkdir -p TFG_F1_FEED
+sudo chown $USER:$USER TFG_F1_FEED
+cd TFG_F1_FEED
+
+# Clona tu repositorio
+git clone https://github.com/TU_USUARIO/TU_REPOSITORIO.git f1_speed
 cd f1_speed
 
 # Instalar dependencias PHP
 composer install --no-dev --optimize-autoloader
 
 # Instalar dependencias JS y compilar para producción
+# IMPORTANTE: Los nombres de carpetas en Linux son sensibles a mayúsculas (Case-sensitive).
+# Asegúrate de que tus imports en React coincidan exactamente con el nombre de las carpetas.
 npm install
 npm run build
 ```
@@ -110,7 +115,7 @@ server {
     }
 
     location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.5-fpm.sock;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
     }
